@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en-US">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, follow">
+<title>404 — Joe Severino</title>
+<style>
+  :root {
+    color-scheme: light dark;
+    --bg: #ffffff;
+    --fg: #1f2328;
+    --muted: #57606a;
+    --accent: #2563eb;
+    --border: #d0d7de;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #0d1117;
+      --fg: #e6edf3;
+      --muted: #8b949e;
+      --accent: #58a6ff;
+      --border: #30363d;
+    }
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    background: var(--bg);
+    color: var(--fg);
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    line-height: 1.5;
+  }
+  main {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 2rem 1rem;
+  }
+  .card {
+    max-width: 32rem;
+    text-align: center;
+  }
+  .code {
+    font-size: clamp(3.5rem, 12vw, 6rem);
+    font-weight: 700;
+    letter-spacing: -0.04em;
+    line-height: 1;
+    margin: 0 0 0.5rem;
+  }
+  h1 {
+    font-size: 1.5rem;
+    margin: 0 0 1rem;
+    font-weight: 600;
+  }
+  p {
+    color: var(--muted);
+    margin: 0 0 2rem;
+  }
+  .actions {
+    display: flex;
+    gap: 0.75rem;
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+  a.btn {
+    display: inline-block;
+    padding: 0.6rem 1.2rem;
+    border-radius: 9999px;
+    text-decoration: none;
+    font-weight: 500;
+    border: 1px solid var(--border);
+    color: var(--fg);
+    transition: background 0.15s ease;
+  }
+  a.btn:hover { background: rgba(127,127,127,0.08); }
+  a.btn.primary {
+    background: var(--accent);
+    color: white;
+    border-color: var(--accent);
+  }
+  a.btn.primary:hover { filter: brightness(1.1); }
+  footer {
+    text-align: center;
+    color: var(--muted);
+    font-size: 0.875rem;
+    padding: 1rem;
+    border-top: 1px solid var(--border);
+  }
+  footer a { color: inherit; }
+</style>
+</head>
+<body>
+<main>
+  <div class="card">
+    <div class="code" aria-hidden="true">404</div>
+    <h1>Page not found</h1>
+    <p>This page doesn't exist on the static mirror. It may have been moved, removed, or never existed.</p>
+    <div class="actions">
+      <a class="btn primary" href="/">Home</a>
+      <a class="btn" href="/portfolio/">Portfolio</a>
+      <a class="btn" href="/contact/">Contact</a>
+    </div>
+  </div>
+</main>
+<footer>
+  <a href="/">Joe Severino</a> · Cybersecurity · IT Project Management
+</footer>
+</body>
+</html>

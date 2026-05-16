@@ -1,6 +1,9 @@
 .DS_Store
 .claude/
 
+# wrangler local cache (created when deploying from CLI)
+.wrangler/
+
 # Original "Save Page As" dump used to bootstrap this project — the
 # wget-mirrored public/ supersedes it. Kept on disk for reference but
 # not tracked.
