@@ -1,0 +1,25 @@
+/* Grouped Tag Cloud — frontend styles */
+
+.sl-grouped-tag-cloud {
+    width: 100%;
+}
+
+.sl-tag-group {
+    margin-bottom: 1.5rem;
+}
+
+.sl-tag-group-label {
+    font-size: 0.75rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: #888;
+    margin: 0 0 0.6rem 0;
+    padding: 0;
+    border: none;
+}
+
+.sl-tag-groups-empty {
+    color: #888;
+    font-style: italic;
+}

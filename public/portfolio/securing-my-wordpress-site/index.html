@@ -1,0 +1,885 @@
+<!DOCTYPE html>
+<html lang="en-US">
+<head>
+	<meta charset="UTF-8" />
+	<meta name="viewport" content="width=device-width, initial-scale=1" />
+<meta name='robots' content='index, max-snippet:-1, max-image-preview:large, max-video-preview:-1, follow' />
+<meta name="google" content="nositelinkssearchbox" ><link rel="canonical" href="/portfolio/securing-my-wordpress-site/" />
+<meta name="description" content="A WordPress hardening project that combines Cloudflare edge security, a custom security plugin, browser-enforced policies, reduced default exposure, and a passkey-only admin login."><meta name="keywords" content="WordPress security hardening"><script type="application/ld+json">{"@context":"https://schema.org","@type":"Person","@id":"https://jseverino.com/#Person","name":"Joe Severino","url":"https://jseverino.com","logo":{"@type":"ImageObject","@id":"https://jseverino.com/#logo","url":"https://jseverino.com/wp-content/uploads/sites/2/2025/08/cropped-JS-2.png","contentUrl":"https://jseverino.com/wp-content/uploads/sites/2/2025/08/cropped-JS-2.png","caption":"Joe Severino","inLanguage":"en-US","width":512,"height":512},"description":"Joe Severino","sameAs":["https://x.com/"]}</script><meta property="og:url" content="https://jseverino.com/portfolio/securing-my-wordpress-site/" /><meta property="og:site_name" content="Joe Severino" /><meta property="og:locale" content="en_US" /><meta property="og:type" content="article" /><meta property="og:title" content="Securing My WordPress Site with Cloudflare, CSP, and Passkey Authentication - Joe Severino" /><meta property="og:description" content="A WordPress hardening project that combines Cloudflare edge security, a custom security plugin, browser-enforced policies, reduced default exposure, and a passkey-only admin login. " /><meta property="og:image" content="https://jseverino.com/wp-content/uploads/sites/2/2026/04/cover.png" /><meta property="og:secure_url" content="https://jseverino.com/wp-content/uploads/sites/2/2026/04/cover.png" /><meta property="og:image:height" content="1186" /><meta property="og:image:width" content="2258" /><meta name="twitter:card" content="summary"/><meta name="twitter:locale" content="en_US"/><meta name="twitter:title"  content="Securing My WordPress Site with Cloudflare, CSP, and Passkey Authentication - Joe Severino"/><meta name="twitter:description" content="A WordPress hardening project that combines Cloudflare edge security, a custom security plugin, browser-enforced policies, reduced default exposure, and a passkey-only admin login. "/><meta name="twitter:url" content="https://jseverino.com/portfolio/securing-my-wordpress-site/"/><meta name="twitter:image" content="https://jseverino.com/wp-content/uploads/sites/2/2026/04/cover.png"/><title>Securing My WordPress Site with Cloudflare, CSP, and Passkey Authentication - Joe Severino</title>
+<link rel='dns-prefetch' href='https://www.googletagmanager.com/' />
+<link rel="alternate" type="application/rss+xml" title="Joe Severino &raquo; Feed" href="https://jseverino.com/feed/" />
+<link rel="alternate" type="application/rss+xml" title="Joe Severino &raquo; Comments Feed" href="https://jseverino.com/comments/feed/" />
+<link rel="alternate" type="application/rss+xml" title="Joe Severino &raquo; Securing My WordPress Site with Cloudflare, CSP, and Passkey Authentication Comments Feed" href="https://jseverino.com/portfolio/securing-my-wordpress-site/feed/" />
+<link rel="alternate" title="oEmbed (JSON)" type="application/json+oembed" href="https://jseverino.com/wp-json/oembed/1.0/embed?url=https%3A%2F%2Fjseverino.com%2Fportfolio%2Fsecuring-my-wordpress-site%2F" />
+<link rel="alternate" title="oEmbed (XML)" type="text/xml+oembed" href="https://jseverino.com/wp-json/oembed/1.0/embed?url=https%3A%2F%2Fjseverino.com%2Fportfolio%2Fsecuring-my-wordpress-site%2F&#038;format=xml" />
+<style id='wp-img-auto-sizes-contain-inline-css'>
+img:is([sizes=auto i],[sizes^="auto," i]){contain-intrinsic-size:3000px 1500px}
+/*# sourceURL=wp-img-auto-sizes-contain-inline-css */
+</style>
+<style id='wp-block-site-title-inline-css'>
+.wp-block-site-title{box-sizing:border-box}.wp-block-site-title :where(a){color:inherit;font-family:inherit;font-size:inherit;font-style:inherit;font-weight:inherit;letter-spacing:inherit;line-height:inherit;text-decoration:inherit}
+/*# sourceURL=https://jseverino.com/wp-includes/blocks/site-title/style.min.css */
+</style>
+<style id='wp-block-group-inline-css'>
+.wp-block-group{box-sizing:border-box}:where(.wp-block-group.wp-block-group-is-layout-constrained){position:relative}
+/*# sourceURL=https://jseverino.com/wp-includes/blocks/group/style.min.css */
+</style>
+<style id='wp-block-group-theme-inline-css'>
+:where(.wp-block-group.has-background){padding:1.25em 2.375em}
+/*# sourceURL=https://jseverino.com/wp-includes/blocks/group/theme.min.css */
+</style>
+<style id='wp-block-navigation-link-inline-css'>
+.wp-block-navigation .wp-block-navigation-item__label{overflow-wrap:break-word}.wp-block-navigation .wp-block-navigation-item__description{display:none}.link-ui-tools{outline:1px solid #f0f0f0;padding:8px}.link-ui-block-inserter{padding-top:8px}.link-ui-block-inserter__back{margin-left:8px;text-transform:uppercase}
+/*# sourceURL=https://jseverino.com/wp-includes/blocks/navigation-link/style.min.css */
+</style>
+<link rel='stylesheet' id='wp-block-navigation-css' href='../../wp-includes/blocks/navigation/style.min.css' media='all' />
+<style id='wp-block-template-part-theme-inline-css'>
+:root :where(.wp-block-template-part.has-background){margin-bottom:0;margin-top:0;padding:1.25em 2.375em}
+/*# sourceURL=https://jseverino.com/wp-includes/blocks/template-part/theme.min.css */
+</style>
+<style id='wp-block-post-title-inline-css'>
+.wp-block-post-title{box-sizing:border-box;word-break:break-word}.wp-block-post-title :where(a){display:inline-block;font-family:inherit;font-size:inherit;font-style:inherit;font-weight:inherit;letter-spacing:inherit;line-height:inherit;text-decoration:inherit}
+/*# sourceURL=https://jseverino.com/wp-includes/blocks/post-title/style.min.css */
+</style>
+<style id='wp-block-post-date-inline-css'>
+.wp-block-post-date{box-sizing:border-box}
+/*# sourceURL=https://jseverino.com/wp-includes/blocks/post-date/style.min.css */
+</style>
+<style id='wp-block-post-featured-image-inline-css'>
+.wp-block-post-featured-image{margin-left:0;margin-right:0}.wp-block-post-featured-image a{display:block;height:100%}.wp-block-post-featured-image :where(img){box-sizing:border-box;height:auto;max-width:100%;vertical-align:bottom;width:100%}.wp-block-post-featured-image.alignfull img,.wp-block-post-featured-image.alignwide img{width:100%}.wp-block-post-featured-image .wp-block-post-featured-image__overlay.has-background-dim{background-color:#000;inset:0;position:absolute}.wp-block-post-featured-image{position:relative}.wp-block-post-featured-image .wp-block-post-featured-image__overlay.has-background-gradient{background-color:initial}.wp-block-post-featured-image .wp-block-post-featured-image__overlay.has-background-dim-0{opacity:0}.wp-block-post-featured-image .wp-block-post-featured-image__overlay.has-background-dim-10{opacity:.1}.wp-block-post-featured-image .wp-block-post-featured-image__overlay.has-background-dim-20{opacity:.2}.wp-block-post-featured-image .wp-block-post-featured-image__overlay.has-background-dim-30{opacity:.3}.wp-block-post-featured-image .wp-block-post-featured-image__overlay.has-background-dim-40{opacity:.4}.wp-block-post-featured-image .wp-block-post-featured-image__overlay.has-background-dim-50{opacity:.5}.wp-block-post-featured-image .wp-block-post-featured-image__overlay.has-background-dim-60{opacity:.6}.wp-block-post-featured-image .wp-block-post-featured-image__overlay.has-background-dim-70{opacity:.7}.wp-block-post-featured-image .wp-block-post-featured-image__overlay.has-background-dim-80{opacity:.8}.wp-block-post-featured-image .wp-block-post-featured-image__overlay.has-background-dim-90{opacity:.9}.wp-block-post-featured-image .wp-block-post-featured-image__overlay.has-background-dim-100{opacity:1}.wp-block-post-featured-image:where(.alignleft,.alignright){width:100%}
+/*# sourceURL=https://jseverino.com/wp-includes/blocks/post-featured-image/style.min.css */
+</style>
+<style id='wp-block-heading-inline-css'>
+h1:where(.wp-block-heading).has-background,h2:where(.wp-block-heading).has-background,h3:where(.wp-block-heading).has-background,h4:where(.wp-block-heading).has-background,h5:where(.wp-block-heading).has-background,h6:where(.wp-block-heading).has-background{padding:1.25em 2.375em}h1.has-text-align-left[style*=writing-mode]:where([style*=vertical-lr]),h1.has-text-align-right[style*=writing-mode]:where([style*=vertical-rl]),h2.has-text-align-left[style*=writing-mode]:where([style*=vertical-lr]),h2.has-text-align-right[style*=writing-mode]:where([style*=vertical-rl]),h3.has-text-align-left[style*=writing-mode]:where([style*=vertical-lr]),h3.has-text-align-right[style*=writing-mode]:where([style*=vertical-rl]),h4.has-text-align-left[style*=writing-mode]:where([style*=vertical-lr]),h4.has-text-align-right[style*=writing-mode]:where([style*=vertical-rl]),h5.has-text-align-left[style*=writing-mode]:where([style*=vertical-lr]),h5.has-text-align-right[style*=writing-mode]:where([style*=vertical-rl]),h6.has-text-align-left[style*=writing-mode]:where([style*=vertical-lr]),h6.has-text-align-right[style*=writing-mode]:where([style*=vertical-rl]){rotate:180deg}
+/*# sourceURL=https://jseverino.com/wp-includes/blocks/heading/style.min.css */
+</style>
+<style id='wp-block-paragraph-inline-css'>
+.is-small-text{font-size:.875em}.is-regular-text{font-size:1em}.is-large-text{font-size:2.25em}.is-larger-text{font-size:3em}.has-drop-cap:not(:focus):first-letter{float:left;font-size:8.4em;font-style:normal;font-weight:100;line-height:.68;margin:.05em .1em 0 0;text-transform:uppercase}body.rtl .has-drop-cap:not(:focus):first-letter{float:none;margin-left:.1em}p.has-drop-cap.has-background{overflow:hidden}:root :where(p.has-background){padding:1.25em 2.375em}:where(p.has-text-color:not(.has-link-color)) a{color:inherit}p.has-text-align-left[style*="writing-mode:vertical-lr"],p.has-text-align-right[style*="writing-mode:vertical-rl"]{rotate:180deg}
+/*# sourceURL=https://jseverino.com/wp-includes/blocks/paragraph/style.min.css */
+</style>
+<style id='wp-block-image-inline-css'>
+.wp-block-image>a,.wp-block-image>figure>a{display:inline-block}.wp-block-image img{box-sizing:border-box;height:auto;max-width:100%;vertical-align:bottom}@media not (prefers-reduced-motion){.wp-block-image img.hide{visibility:hidden}.wp-block-image img.show{animation:show-content-image .4s}}.wp-block-image[style*=border-radius] img,.wp-block-image[style*=border-radius]>a{border-radius:inherit}.wp-block-image.has-custom-border img{box-sizing:border-box}.wp-block-image.aligncenter{text-align:center}.wp-block-image.alignfull>a,.wp-block-image.alignwide>a{width:100%}.wp-block-image.alignfull img,.wp-block-image.alignwide img{height:auto;width:100%}.wp-block-image .aligncenter,.wp-block-image .alignleft,.wp-block-image .alignright,.wp-block-image.aligncenter,.wp-block-image.alignleft,.wp-block-image.alignright{display:table}.wp-block-image .aligncenter>figcaption,.wp-block-image .alignleft>figcaption,.wp-block-image .alignright>figcaption,.wp-block-image.aligncenter>figcaption,.wp-block-image.alignleft>figcaption,.wp-block-image.alignright>figcaption{caption-side:bottom;display:table-caption}.wp-block-image .alignleft{float:left;margin:.5em 1em .5em 0}.wp-block-image .alignright{float:right;margin:.5em 0 .5em 1em}.wp-block-image .aligncenter{margin-left:auto;margin-right:auto}.wp-block-image :where(figcaption){margin-bottom:1em;margin-top:.5em}.wp-block-image.is-style-circle-mask img{border-radius:9999px}@supports ((-webkit-mask-image:none) or (mask-image:none)) or (-webkit-mask-image:none){.wp-block-image.is-style-circle-mask img{border-radius:0;-webkit-mask-image:url('data:image/svg+xml;utf8,<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg"><circle cx="50" cy="50" r="50"/></svg>');mask-image:url('data:image/svg+xml;utf8,<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg"><circle cx="50" cy="50" r="50"/></svg>');mask-mode:alpha;-webkit-mask-position:center;mask-position:center;-webkit-mask-repeat:no-repeat;mask-repeat:no-repeat;-webkit-mask-size:contain;mask-size:contain}}:root :where(.wp-block-image.is-style-rounded img,.wp-block-image .is-style-rounded img){border-radius:9999px}.wp-block-image figure{margin:0}.wp-lightbox-container{display:flex;flex-direction:column;position:relative}.wp-lightbox-container img{cursor:zoom-in}.wp-lightbox-container img:hover+button{opacity:1}.wp-lightbox-container button{align-items:center;backdrop-filter:blur(16px) saturate(180%);background-color:#5a5a5a40;border:none;border-radius:4px;cursor:zoom-in;display:flex;height:20px;justify-content:center;opacity:0;padding:0;position:absolute;right:16px;text-align:center;top:16px;width:20px;z-index:100}@media not (prefers-reduced-motion){.wp-lightbox-container button{transition:opacity .2s ease}}.wp-lightbox-container button:focus-visible{outline:3px auto #5a5a5a40;outline:3px auto -webkit-focus-ring-color;outline-offset:3px}.wp-lightbox-container button:hover{cursor:pointer;opacity:1}.wp-lightbox-container button:focus{opacity:1}.wp-lightbox-container button:focus,.wp-lightbox-container button:hover,.wp-lightbox-container button:not(:hover):not(:active):not(.has-background){background-color:#5a5a5a40;border:none}.wp-lightbox-overlay{box-sizing:border-box;cursor:zoom-out;height:100vh;left:0;overflow:hidden;position:fixed;top:0;visibility:hidden;width:100%;z-index:100000}.wp-lightbox-overlay .close-button{align-items:center;cursor:pointer;display:flex;justify-content:center;min-height:40px;min-width:40px;padding:0;position:absolute;right:calc(env(safe-area-inset-right) + 16px);top:calc(env(safe-area-inset-top) + 16px);z-index:5000000}.wp-lightbox-overlay .close-button:focus,.wp-lightbox-overlay .close-button:hover,.wp-lightbox-overlay .close-button:not(:hover):not(:active):not(.has-background){background:none;border:none}.wp-lightbox-overlay .lightbox-image-container{height:var(--wp--lightbox-container-height);left:50%;overflow:hidden;position:absolute;top:50%;transform:translate(-50%,-50%);transform-origin:top left;width:var(--wp--lightbox-container-width);z-index:9999999999}.wp-lightbox-overlay .wp-block-image{align-items:center;box-sizing:border-box;display:flex;height:100%;justify-content:center;margin:0;position:relative;transform-origin:0 0;width:100%;z-index:3000000}.wp-lightbox-overlay .wp-block-image img{height:var(--wp--lightbox-image-height);min-height:var(--wp--lightbox-image-height);min-width:var(--wp--lightbox-image-width);width:var(--wp--lightbox-image-width)}.wp-lightbox-overlay .wp-block-image figcaption{display:none}.wp-lightbox-overlay button{background:none;border:none}.wp-lightbox-overlay .scrim{background-color:#fff;height:100%;opacity:.9;position:absolute;width:100%;z-index:2000000}.wp-lightbox-overlay.active{visibility:visible}@media not (prefers-reduced-motion){.wp-lightbox-overlay.active{animation:turn-on-visibility .25s both}.wp-lightbox-overlay.active img{animation:turn-on-visibility .35s both}.wp-lightbox-overlay.show-closing-animation:not(.active){animation:turn-off-visibility .35s both}.wp-lightbox-overlay.show-closing-animation:not(.active) img{animation:turn-off-visibility .25s both}.wp-lightbox-overlay.zoom.active{animation:none;opacity:1;visibility:visible}.wp-lightbox-overlay.zoom.active .lightbox-image-container{animation:lightbox-zoom-in .4s}.wp-lightbox-overlay.zoom.active .lightbox-image-container img{animation:none}.wp-lightbox-overlay.zoom.active .scrim{animation:turn-on-visibility .4s forwards}.wp-lightbox-overlay.zoom.show-closing-animation:not(.active){animation:none}.wp-lightbox-overlay.zoom.show-closing-animation:not(.active) .lightbox-image-container{animation:lightbox-zoom-out .4s}.wp-lightbox-overlay.zoom.show-closing-animation:not(.active) .lightbox-image-container img{animation:none}.wp-lightbox-overlay.zoom.show-closing-animation:not(.active) .scrim{animation:turn-off-visibility .4s forwards}}@keyframes show-content-image{0%{visibility:hidden}99%{visibility:hidden}to{visibility:visible}}@keyframes turn-on-visibility{0%{opacity:0}to{opacity:1}}@keyframes turn-off-visibility{0%{opacity:1;visibility:visible}99%{opacity:0;visibility:visible}to{opacity:0;visibility:hidden}}@keyframes lightbox-zoom-in{0%{transform:translate(calc((-100vw + var(--wp--lightbox-scrollbar-width))/2 + var(--wp--lightbox-initial-left-position)),calc(-50vh + var(--wp--lightbox-initial-top-position))) scale(var(--wp--lightbox-scale))}to{transform:translate(-50%,-50%) scale(1)}}@keyframes lightbox-zoom-out{0%{transform:translate(-50%,-50%) scale(1);visibility:visible}99%{visibility:visible}to{transform:translate(calc((-100vw + var(--wp--lightbox-scrollbar-width))/2 + var(--wp--lightbox-initial-left-position)),calc(-50vh + var(--wp--lightbox-initial-top-position))) scale(var(--wp--lightbox-scale));visibility:hidden}}
+/*# sourceURL=https://jseverino.com/wp-includes/blocks/image/style.min.css */
+</style>
+<style id='wp-block-image-theme-inline-css'>
+:root :where(.wp-block-image figcaption){color:#555;font-size:13px;text-align:center}.is-dark-theme :root :where(.wp-block-image figcaption){color:#ffffffa6}.wp-block-image{margin:0 0 1em}
+/*# sourceURL=https://jseverino.com/wp-includes/blocks/image/theme.min.css */
+</style>
+<style id='wp-block-quote-inline-css'>
+.wp-block-quote{box-sizing:border-box;overflow-wrap:break-word}.wp-block-quote.is-large:where(:not(.is-style-plain)),.wp-block-quote.is-style-large:where(:not(.is-style-plain)){margin-bottom:1em;padding:0 1em}.wp-block-quote.is-large:where(:not(.is-style-plain)) p,.wp-block-quote.is-style-large:where(:not(.is-style-plain)) p{font-size:1.5em;font-style:italic;line-height:1.6}.wp-block-quote.is-large:where(:not(.is-style-plain)) cite,.wp-block-quote.is-large:where(:not(.is-style-plain)) footer,.wp-block-quote.is-style-large:where(:not(.is-style-plain)) cite,.wp-block-quote.is-style-large:where(:not(.is-style-plain)) footer{font-size:1.125em;text-align:right}.wp-block-quote>cite{display:block}
+/*# sourceURL=https://jseverino.com/wp-includes/blocks/quote/style.min.css */
+</style>
+<style id='wp-block-quote-theme-inline-css'>
+.wp-block-quote{border-left:.25em solid;margin:0 0 1.75em;padding-left:1em}.wp-block-quote cite,.wp-block-quote footer{color:currentColor;font-size:.8125em;font-style:normal;position:relative}.wp-block-quote:where(.has-text-align-right){border-left:none;border-right:.25em solid;padding-left:0;padding-right:1em}.wp-block-quote:where(.has-text-align-center){border:none;padding-left:0}.wp-block-quote.is-large,.wp-block-quote.is-style-large,.wp-block-quote:where(.is-style-plain){border:none}
+/*# sourceURL=https://jseverino.com/wp-includes/blocks/quote/theme.min.css */
+</style>
+<style id='wp-block-button-inline-css'>
+.wp-block-button__link{align-content:center;box-sizing:border-box;cursor:pointer;display:inline-block;height:100%;text-align:center;word-break:break-word}.wp-block-button__link.aligncenter{text-align:center}.wp-block-button__link.alignright{text-align:right}:where(.wp-block-button__link){border-radius:9999px;box-shadow:none;padding:calc(.667em + 2px) calc(1.333em + 2px);text-decoration:none}.wp-block-button[style*=text-decoration] .wp-block-button__link{text-decoration:inherit}.wp-block-buttons>.wp-block-button.has-custom-width{max-width:none}.wp-block-buttons>.wp-block-button.has-custom-width .wp-block-button__link{width:100%}.wp-block-buttons>.wp-block-button.has-custom-font-size .wp-block-button__link{font-size:inherit}.wp-block-buttons>.wp-block-button.wp-block-button__width-25{width:calc(25% - var(--wp--style--block-gap, .5em)*.75)}.wp-block-buttons>.wp-block-button.wp-block-button__width-50{width:calc(50% - var(--wp--style--block-gap, .5em)*.5)}.wp-block-buttons>.wp-block-button.wp-block-button__width-75{width:calc(75% - var(--wp--style--block-gap, .5em)*.25)}.wp-block-buttons>.wp-block-button.wp-block-button__width-100{flex-basis:100%;width:100%}.wp-block-buttons.is-vertical>.wp-block-button.wp-block-button__width-25{width:25%}.wp-block-buttons.is-vertical>.wp-block-button.wp-block-button__width-50{width:50%}.wp-block-buttons.is-vertical>.wp-block-button.wp-block-button__width-75{width:75%}.wp-block-button.is-style-squared,.wp-block-button__link.wp-block-button.is-style-squared{border-radius:0}.wp-block-button.no-border-radius,.wp-block-button__link.no-border-radius{border-radius:0!important}:root :where(.wp-block-button .wp-block-button__link.is-style-outline),:root :where(.wp-block-button.is-style-outline>.wp-block-button__link){border:2px solid;padding:.667em 1.333em}:root :where(.wp-block-button .wp-block-button__link.is-style-outline:not(.has-text-color)),:root :where(.wp-block-button.is-style-outline>.wp-block-button__link:not(.has-text-color)){color:currentColor}:root :where(.wp-block-button .wp-block-button__link.is-style-outline:not(.has-background)),:root :where(.wp-block-button.is-style-outline>.wp-block-button__link:not(.has-background)){background-color:initial;background-image:none}
+/*# sourceURL=https://jseverino.com/wp-includes/blocks/button/style.min.css */
+</style>
+<style id='wp-block-buttons-inline-css'>
+.wp-block-buttons{box-sizing:border-box}.wp-block-buttons.is-vertical{flex-direction:column}.wp-block-buttons.is-vertical>.wp-block-button:last-child{margin-bottom:0}.wp-block-buttons>.wp-block-button{display:inline-block;margin:0}.wp-block-buttons.is-content-justification-left{justify-content:flex-start}.wp-block-buttons.is-content-justification-left.is-vertical{align-items:flex-start}.wp-block-buttons.is-content-justification-center{justify-content:center}.wp-block-buttons.is-content-justification-center.is-vertical{align-items:center}.wp-block-buttons.is-content-justification-right{justify-content:flex-end}.wp-block-buttons.is-content-justification-right.is-vertical{align-items:flex-end}.wp-block-buttons.is-content-justification-space-between{justify-content:space-between}.wp-block-buttons.aligncenter{text-align:center}.wp-block-buttons:not(.is-content-justification-space-between,.is-content-justification-right,.is-content-justification-left,.is-content-justification-center) .wp-block-button.aligncenter{margin-left:auto;margin-right:auto;width:100%}.wp-block-buttons[style*=text-decoration] .wp-block-button,.wp-block-buttons[style*=text-decoration] .wp-block-button__link{text-decoration:inherit}.wp-block-buttons.has-custom-font-size .wp-block-button__link{font-size:inherit}.wp-block-buttons .wp-block-button__link{width:100%}.wp-block-button.aligncenter{text-align:center}
+/*# sourceURL=https://jseverino.com/wp-includes/blocks/buttons/style.min.css */
+</style>
+<style id='wp-block-list-inline-css'>
+ol,ul{box-sizing:border-box}:root :where(.wp-block-list.has-background){padding:1.25em 2.375em}
+/*# sourceURL=https://jseverino.com/wp-includes/blocks/list/style.min.css */
+</style>
+<style id='wp-block-post-content-inline-css'>
+.wp-block-post-content{display:flow-root}
+/*# sourceURL=https://jseverino.com/wp-includes/blocks/post-content/style.min.css */
+</style>
+<style id='wp-block-post-terms-inline-css'>
+.wp-block-post-terms{box-sizing:border-box}.wp-block-post-terms .wp-block-post-terms__separator{white-space:pre-wrap}
+/*# sourceURL=https://jseverino.com/wp-includes/blocks/post-terms/style.min.css */
+</style>
+<style id='wp-block-separator-inline-css'>
+@charset "UTF-8";.wp-block-separator{border:none;border-top:2px solid}:root :where(.wp-block-separator.is-style-dots){height:auto;line-height:1;text-align:center}:root :where(.wp-block-separator.is-style-dots):before{color:currentColor;content:"···";font-family:serif;font-size:1.5em;letter-spacing:2em;padding-left:2em}.wp-block-separator.is-style-dots{background:none!important;border:none!important}
+/*# sourceURL=https://jseverino.com/wp-includes/blocks/separator/style.min.css */
+</style>
+<style id='wp-block-separator-theme-inline-css'>
+.wp-block-separator.has-css-opacity{opacity:.4}.wp-block-separator{border:none;border-bottom:2px solid;margin-left:auto;margin-right:auto}.wp-block-separator.has-alpha-channel-opacity{opacity:1}.wp-block-separator:not(.is-style-wide):not(.is-style-dots){width:100px}.wp-block-separator.has-background:not(.is-style-dots){border-bottom:none;height:1px}.wp-block-separator.has-background:not(.is-style-wide):not(.is-style-dots){height:2px}
+/*# sourceURL=https://jseverino.com/wp-includes/blocks/separator/theme.min.css */
+</style>
+<style id='wp-block-social-links-inline-css'>
+.wp-block-social-links{background:none;box-sizing:border-box;margin-left:0;padding-left:0;padding-right:0;text-indent:0}.wp-block-social-links .wp-social-link a,.wp-block-social-links .wp-social-link a:hover{border-bottom:0;box-shadow:none;text-decoration:none}.wp-block-social-links .wp-social-link svg{height:1em;width:1em}.wp-block-social-links .wp-social-link span:not(.screen-reader-text){font-size:.65em;margin-left:.5em;margin-right:.5em}.wp-block-social-links.has-small-icon-size{font-size:16px}.wp-block-social-links,.wp-block-social-links.has-normal-icon-size{font-size:24px}.wp-block-social-links.has-large-icon-size{font-size:36px}.wp-block-social-links.has-huge-icon-size{font-size:48px}.wp-block-social-links.aligncenter{display:flex;justify-content:center}.wp-block-social-links.alignright{justify-content:flex-end}.wp-block-social-link{border-radius:9999px;display:block}@media not (prefers-reduced-motion){.wp-block-social-link{transition:transform .1s ease}}.wp-block-social-link{height:auto}.wp-block-social-link a{align-items:center;display:flex;line-height:0}.wp-block-social-link:hover{transform:scale(1.1)}.wp-block-social-links .wp-block-social-link.wp-social-link{display:inline-block;margin:0;padding:0}.wp-block-social-links .wp-block-social-link.wp-social-link .wp-block-social-link-anchor,.wp-block-social-links .wp-block-social-link.wp-social-link .wp-block-social-link-anchor svg,.wp-block-social-links .wp-block-social-link.wp-social-link .wp-block-social-link-anchor:active,.wp-block-social-links .wp-block-social-link.wp-social-link .wp-block-social-link-anchor:hover,.wp-block-social-links .wp-block-social-link.wp-social-link .wp-block-social-link-anchor:visited{color:currentColor;fill:currentColor}:where(.wp-block-social-links:not(.is-style-logos-only)) .wp-social-link{background-color:#f0f0f0;color:#444}:where(.wp-block-social-links:not(.is-style-logos-only)) .wp-social-link-amazon{background-color:#f90;color:#fff}:where(.wp-block-social-links:not(.is-style-logos-only)) .wp-social-link-bandcamp{background-color:#1ea0c3;color:#fff}:where(.wp-block-social-links:not(.is-style-logos-only)) .wp-social-link-behance{background-color:#0757fe;color:#fff}:where(.wp-block-social-links:not(.is-style-logos-only)) .wp-social-link-bluesky{background-color:#0a7aff;color:#fff}:where(.wp-block-social-links:not(.is-style-logos-only)) .wp-social-link-codepen{background-color:#1e1f26;color:#fff}:where(.wp-block-social-links:not(.is-style-logos-only)) .wp-social-link-deviantart{background-color:#02e49b;color:#fff}:where(.wp-block-social-links:not(.is-style-logos-only)) .wp-social-link-discord{background-color:#5865f2;color:#fff}:where(.wp-block-social-links:not(.is-style-logos-only)) .wp-social-link-dribbble{background-color:#e94c89;color:#fff}:where(.wp-block-social-links:not(.is-style-logos-only)) .wp-social-link-dropbox{background-color:#4280ff;color:#fff}:where(.wp-block-social-links:not(.is-style-logos-only)) .wp-social-link-etsy{background-color:#f45800;color:#fff}:where(.wp-block-social-links:not(.is-style-logos-only)) .wp-social-link-facebook{background-color:#0866ff;color:#fff}:where(.wp-block-social-links:not(.is-style-logos-only)) .wp-social-link-fivehundredpx{background-color:#000;color:#fff}:where(.wp-block-social-links:not(.is-style-logos-only)) .wp-social-link-flickr{background-color:#0461dd;color:#fff}:where(.wp-block-social-links:not(.is-style-logos-only)) .wp-social-link-foursquare{background-color:#e65678;color:#fff}:where(.wp-block-social-links:not(.is-style-logos-only)) .wp-social-link-github{background-color:#24292d;color:#fff}:where(.wp-block-social-links:not(.is-style-logos-only)) .wp-social-link-goodreads{background-color:#eceadd;color:#382110}:where(.wp-block-social-links:not(.is-style-logos-only)) .wp-social-link-google{background-color:#ea4434;color:#fff}:where(.wp-block-social-links:not(.is-style-logos-only)) .wp-social-link-gravatar{background-color:#1d4fc4;color:#fff}:where(.wp-block-social-links:not(.is-style-logos-only)) .wp-social-link-instagram{background-color:#f00075;color:#fff}:where(.wp-block-social-links:not(.is-style-logos-only)) .wp-social-link-lastfm{background-color:#e21b24;color:#fff}:where(.wp-block-social-links:not(.is-style-logos-only)) .wp-social-link-linkedin{background-color:#0d66c2;color:#fff}:where(.wp-block-social-links:not(.is-style-logos-only)) .wp-social-link-mastodon{background-color:#3288d4;color:#fff}:where(.wp-block-social-links:not(.is-style-logos-only)) .wp-social-link-medium{background-color:#000;color:#fff}:where(.wp-block-social-links:not(.is-style-logos-only)) .wp-social-link-meetup{background-color:#f6405f;color:#fff}:where(.wp-block-social-links:not(.is-style-logos-only)) .wp-social-link-patreon{background-color:#000;color:#fff}:where(.wp-block-social-links:not(.is-style-logos-only)) .wp-social-link-pinterest{background-color:#e60122;color:#fff}:where(.wp-block-social-links:not(.is-style-logos-only)) .wp-social-link-pocket{background-color:#ef4155;color:#fff}:where(.wp-block-social-links:not(.is-style-logos-only)) .wp-social-link-reddit{background-color:#ff4500;color:#fff}:where(.wp-block-social-links:not(.is-style-logos-only)) .wp-social-link-skype{background-color:#0478d7;color:#fff}:where(.wp-block-social-links:not(.is-style-logos-only)) .wp-social-link-snapchat{background-color:#fefc00;color:#fff;stroke:#000}:where(.wp-block-social-links:not(.is-style-logos-only)) .wp-social-link-soundcloud{background-color:#ff5600;color:#fff}:where(.wp-block-social-links:not(.is-style-logos-only)) .wp-social-link-spotify{background-color:#1bd760;color:#fff}:where(.wp-block-social-links:not(.is-style-logos-only)) .wp-social-link-telegram{background-color:#2aabee;color:#fff}:where(.wp-block-social-links:not(.is-style-logos-only)) .wp-social-link-threads{background-color:#000;color:#fff}:where(.wp-block-social-links:not(.is-style-logos-only)) .wp-social-link-tiktok{background-color:#000;color:#fff}:where(.wp-block-social-links:not(.is-style-logos-only)) .wp-social-link-tumblr{background-color:#011835;color:#fff}:where(.wp-block-social-links:not(.is-style-logos-only)) .wp-social-link-twitch{background-color:#6440a4;color:#fff}:where(.wp-block-social-links:not(.is-style-logos-only)) .wp-social-link-twitter{background-color:#1da1f2;color:#fff}:where(.wp-block-social-links:not(.is-style-logos-only)) .wp-social-link-vimeo{background-color:#1eb7ea;color:#fff}:where(.wp-block-social-links:not(.is-style-logos-only)) .wp-social-link-vk{background-color:#4680c2;color:#fff}:where(.wp-block-social-links:not(.is-style-logos-only)) .wp-social-link-wordpress{background-color:#3499cd;color:#fff}:where(.wp-block-social-links:not(.is-style-logos-only)) .wp-social-link-whatsapp{background-color:#25d366;color:#fff}:where(.wp-block-social-links:not(.is-style-logos-only)) .wp-social-link-x{background-color:#000;color:#fff}:where(.wp-block-social-links:not(.is-style-logos-only)) .wp-social-link-yelp{background-color:#d32422;color:#fff}:where(.wp-block-social-links:not(.is-style-logos-only)) .wp-social-link-youtube{background-color:red;color:#fff}:where(.wp-block-social-links.is-style-logos-only) .wp-social-link{background:none}:where(.wp-block-social-links.is-style-logos-only) .wp-social-link svg{height:1.25em;width:1.25em}:where(.wp-block-social-links.is-style-logos-only) .wp-social-link-amazon{color:#f90}:where(.wp-block-social-links.is-style-logos-only) .wp-social-link-bandcamp{color:#1ea0c3}:where(.wp-block-social-links.is-style-logos-only) .wp-social-link-behance{color:#0757fe}:where(.wp-block-social-links.is-style-logos-only) .wp-social-link-bluesky{color:#0a7aff}:where(.wp-block-social-links.is-style-logos-only) .wp-social-link-codepen{color:#1e1f26}:where(.wp-block-social-links.is-style-logos-only) .wp-social-link-deviantart{color:#02e49b}:where(.wp-block-social-links.is-style-logos-only) .wp-social-link-discord{color:#5865f2}:where(.wp-block-social-links.is-style-logos-only) .wp-social-link-dribbble{color:#e94c89}:where(.wp-block-social-links.is-style-logos-only) .wp-social-link-dropbox{color:#4280ff}:where(.wp-block-social-links.is-style-logos-only) .wp-social-link-etsy{color:#f45800}:where(.wp-block-social-links.is-style-logos-only) .wp-social-link-facebook{color:#0866ff}:where(.wp-block-social-links.is-style-logos-only) .wp-social-link-fivehundredpx{color:#000}:where(.wp-block-social-links.is-style-logos-only) .wp-social-link-flickr{color:#0461dd}:where(.wp-block-social-links.is-style-logos-only) .wp-social-link-foursquare{color:#e65678}:where(.wp-block-social-links.is-style-logos-only) .wp-social-link-github{color:#24292d}:where(.wp-block-social-links.is-style-logos-only) .wp-social-link-goodreads{color:#382110}:where(.wp-block-social-links.is-style-logos-only) .wp-social-link-google{color:#ea4434}:where(.wp-block-social-links.is-style-logos-only) .wp-social-link-gravatar{color:#1d4fc4}:where(.wp-block-social-links.is-style-logos-only) .wp-social-link-instagram{color:#f00075}:where(.wp-block-social-links.is-style-logos-only) .wp-social-link-lastfm{color:#e21b24}:where(.wp-block-social-links.is-style-logos-only) .wp-social-link-linkedin{color:#0d66c2}:where(.wp-block-social-links.is-style-logos-only) .wp-social-link-mastodon{color:#3288d4}:where(.wp-block-social-links.is-style-logos-only) .wp-social-link-medium{color:#000}:where(.wp-block-social-links.is-style-logos-only) .wp-social-link-meetup{color:#f6405f}:where(.wp-block-social-links.is-style-logos-only) .wp-social-link-patreon{color:#000}:where(.wp-block-social-links.is-style-logos-only) .wp-social-link-pinterest{color:#e60122}:where(.wp-block-social-links.is-style-logos-only) .wp-social-link-pocket{color:#ef4155}:where(.wp-block-social-links.is-style-logos-only) .wp-social-link-reddit{color:#ff4500}:where(.wp-block-social-links.is-style-logos-only) .wp-social-link-skype{color:#0478d7}:where(.wp-block-social-links.is-style-logos-only) .wp-social-link-snapchat{color:#fff;stroke:#000}:where(.wp-block-social-links.is-style-logos-only) .wp-social-link-soundcloud{color:#ff5600}:where(.wp-block-social-links.is-style-logos-only) .wp-social-link-spotify{color:#1bd760}:where(.wp-block-social-links.is-style-logos-only) .wp-social-link-telegram{color:#2aabee}:where(.wp-block-social-links.is-style-logos-only) .wp-social-link-threads{color:#000}:where(.wp-block-social-links.is-style-logos-only) .wp-social-link-tiktok{color:#000}:where(.wp-block-social-links.is-style-logos-only) .wp-social-link-tumblr{color:#011835}:where(.wp-block-social-links.is-style-logos-only) .wp-social-link-twitch{color:#6440a4}:where(.wp-block-social-links.is-style-logos-only) .wp-social-link-twitter{color:#1da1f2}:where(.wp-block-social-links.is-style-logos-only) .wp-social-link-vimeo{color:#1eb7ea}:where(.wp-block-social-links.is-style-logos-only) .wp-social-link-vk{color:#4680c2}:where(.wp-block-social-links.is-style-logos-only) .wp-social-link-whatsapp{color:#25d366}:where(.wp-block-social-links.is-style-logos-only) .wp-social-link-wordpress{color:#3499cd}:where(.wp-block-social-links.is-style-logos-only) .wp-social-link-x{color:#000}:where(.wp-block-social-links.is-style-logos-only) .wp-social-link-yelp{color:#d32422}:where(.wp-block-social-links.is-style-logos-only) .wp-social-link-youtube{color:red}.wp-block-social-links.is-style-pill-shape .wp-social-link{width:auto}:root :where(.wp-block-social-links .wp-social-link a){padding:.25em}:root :where(.wp-block-social-links.is-style-logos-only .wp-social-link a){padding:0}:root :where(.wp-block-social-links.is-style-pill-shape .wp-social-link a){padding-left:.6666666667em;padding-right:.6666666667em}.wp-block-social-links:not(.has-icon-color):not(.has-icon-background-color) .wp-social-link-snapchat .wp-block-social-link-label{color:#000}
+/*# sourceURL=https://jseverino.com/wp-includes/blocks/social-links/style.min.css */
+</style>
+<style id='wp-emoji-styles-inline-css'>
+
+	img.wp-smiley, img.emoji {
+		display: inline !important;
+		border: none !important;
+		box-shadow: none !important;
+		height: 1em !important;
+		width: 1em !important;
+		margin: 0 0.07em !important;
+		vertical-align: -0.1em !important;
+		background: none !important;
+		padding: 0 !important;
+	}
+/*# sourceURL=wp-emoji-styles-inline-css */
+</style>
+<style id='wp-block-library-inline-css'>
+:root{--wp-block-synced-color:#7a00df;--wp-block-synced-color--rgb:122,0,223;--wp-bound-block-color:var(--wp-block-synced-color);--wp-editor-canvas-background:#ddd;--wp-admin-theme-color:#007cba;--wp-admin-theme-color--rgb:0,124,186;--wp-admin-theme-color-darker-10:#006ba1;--wp-admin-theme-color-darker-10--rgb:0,107,160.5;--wp-admin-theme-color-darker-20:#005a87;--wp-admin-theme-color-darker-20--rgb:0,90,135;--wp-admin-border-width-focus:2px}@media (min-resolution:192dpi){:root{--wp-admin-border-width-focus:1.5px}}.wp-element-button{cursor:pointer}:root .has-very-light-gray-background-color{background-color:#eee}:root .has-very-dark-gray-background-color{background-color:#313131}:root .has-very-light-gray-color{color:#eee}:root .has-very-dark-gray-color{color:#313131}:root .has-vivid-green-cyan-to-vivid-cyan-blue-gradient-background{background:linear-gradient(135deg,#00d084,#0693e3)}:root .has-purple-crush-gradient-background{background:linear-gradient(135deg,#34e2e4,#4721fb 50%,#ab1dfe)}:root .has-hazy-dawn-gradient-background{background:linear-gradient(135deg,#faaca8,#dad0ec)}:root .has-subdued-olive-gradient-background{background:linear-gradient(135deg,#fafae1,#67a671)}:root .has-atomic-cream-gradient-background{background:linear-gradient(135deg,#fdd79a,#004a59)}:root .has-nightshade-gradient-background{background:linear-gradient(135deg,#330968,#31cdcf)}:root .has-midnight-gradient-background{background:linear-gradient(135deg,#020381,#2874fc)}:root{--wp--preset--font-size--normal:16px;--wp--preset--font-size--huge:42px}.has-regular-font-size{font-size:1em}.has-larger-font-size{font-size:2.625em}.has-normal-font-size{font-size:var(--wp--preset--font-size--normal)}.has-huge-font-size{font-size:var(--wp--preset--font-size--huge)}.has-text-align-center{text-align:center}.has-text-align-left{text-align:left}.has-text-align-right{text-align:right}.has-fit-text{white-space:nowrap!important}#end-resizable-editor-section{display:none}.aligncenter{clear:both}.items-justified-left{justify-content:flex-start}.items-justified-center{justify-content:center}.items-justified-right{justify-content:flex-end}.items-justified-space-between{justify-content:space-between}.screen-reader-text{border:0;clip-path:inset(50%);height:1px;margin:-1px;overflow:hidden;padding:0;position:absolute;width:1px;word-wrap:normal!important}.screen-reader-text:focus{background-color:#ddd;clip-path:none;color:#444;display:block;font-size:1em;height:auto;left:5px;line-height:normal;padding:15px 23px 14px;text-decoration:none;top:5px;width:auto;z-index:100000}html :where(.has-border-color){border-style:solid}html :where([style*=border-top-color]){border-top-style:solid}html :where([style*=border-right-color]){border-right-style:solid}html :where([style*=border-bottom-color]){border-bottom-style:solid}html :where([style*=border-left-color]){border-left-style:solid}html :where([style*=border-width]){border-style:solid}html :where([style*=border-top-width]){border-top-style:solid}html :where([style*=border-right-width]){border-right-style:solid}html :where([style*=border-bottom-width]){border-bottom-style:solid}html :where([style*=border-left-width]){border-left-style:solid}html :where(img[class*=wp-image-]){height:auto;max-width:100%}:where(figure){margin:0 0 1em}html :where(.is-position-sticky){--wp-admin--admin-bar--position-offset:var(--wp-admin--admin-bar--height,0px)}@media screen and (max-width:600px){html :where(.is-position-sticky){--wp-admin--admin-bar--position-offset:0px}}
+/*# sourceURL=/wp-includes/css/dist/block-library/common.min.css */
+</style>
+<style id='global-styles-inline-css'>
+:root{--wp--preset--aspect-ratio--square: 1;--wp--preset--aspect-ratio--4-3: 4/3;--wp--preset--aspect-ratio--3-4: 3/4;--wp--preset--aspect-ratio--3-2: 3/2;--wp--preset--aspect-ratio--2-3: 2/3;--wp--preset--aspect-ratio--16-9: 16/9;--wp--preset--aspect-ratio--9-16: 9/16;--wp--preset--color--black: #000000;--wp--preset--color--cyan-bluish-gray: #abb8c3;--wp--preset--color--white: #ffffff;--wp--preset--color--pale-pink: #f78da7;--wp--preset--color--vivid-red: #cf2e2e;--wp--preset--color--luminous-vivid-orange: #ff6900;--wp--preset--color--luminous-vivid-amber: #fcb900;--wp--preset--color--light-green-cyan: #7bdcb5;--wp--preset--color--vivid-green-cyan: #00d084;--wp--preset--color--pale-cyan-blue: #8ed1fc;--wp--preset--color--vivid-cyan-blue: #0693e3;--wp--preset--color--vivid-purple: #9b51e0;--wp--preset--color--background: #ffffff;--wp--preset--color--foreground: #0B0620;--wp--preset--color--primary: #381d92;--wp--preset--color--secondary: #1C0A63;--wp--preset--color--tertiary: #F2F2FA;--wp--preset--color--foreground-alt: #5E4E9E;--wp--preset--color--muted: #797684;--wp--preset--gradient--vivid-cyan-blue-to-vivid-purple: linear-gradient(135deg,rgb(6,147,227) 0%,rgb(155,81,224) 100%);--wp--preset--gradient--light-green-cyan-to-vivid-green-cyan: linear-gradient(135deg,rgb(122,220,180) 0%,rgb(0,208,130) 100%);--wp--preset--gradient--luminous-vivid-amber-to-luminous-vivid-orange: linear-gradient(135deg,rgb(252,185,0) 0%,rgb(255,105,0) 100%);--wp--preset--gradient--luminous-vivid-orange-to-vivid-red: linear-gradient(135deg,rgb(255,105,0) 0%,rgb(207,46,46) 100%);--wp--preset--gradient--very-light-gray-to-cyan-bluish-gray: linear-gradient(135deg,rgb(238,238,238) 0%,rgb(169,184,195) 100%);--wp--preset--gradient--cool-to-warm-spectrum: linear-gradient(135deg,rgb(74,234,220) 0%,rgb(151,120,209) 20%,rgb(207,42,186) 40%,rgb(238,44,130) 60%,rgb(251,105,98) 80%,rgb(254,248,76) 100%);--wp--preset--gradient--blush-light-purple: linear-gradient(135deg,rgb(255,206,236) 0%,rgb(152,150,240) 100%);--wp--preset--gradient--blush-bordeaux: linear-gradient(135deg,rgb(254,205,165) 0%,rgb(254,45,45) 50%,rgb(107,0,62) 100%);--wp--preset--gradient--luminous-dusk: linear-gradient(135deg,rgb(255,203,112) 0%,rgb(199,81,192) 50%,rgb(65,88,208) 100%);--wp--preset--gradient--pale-ocean: linear-gradient(135deg,rgb(255,245,203) 0%,rgb(182,227,212) 50%,rgb(51,167,181) 100%);--wp--preset--gradient--electric-grass: linear-gradient(135deg,rgb(202,248,128) 0%,rgb(113,206,126) 100%);--wp--preset--gradient--midnight: linear-gradient(135deg,rgb(2,3,129) 0%,rgb(40,116,252) 100%);--wp--preset--gradient--vertical-secondary-to-tertiary: linear-gradient(to bottom,var(--wp--preset--color--secondary) 0%,var(--wp--preset--color--tertiary) 100%);--wp--preset--gradient--vertical-secondary-to-background: linear-gradient(to bottom,var(--wp--preset--color--secondary) 0%,var(--wp--preset--color--background) 100%);--wp--preset--gradient--vertical-tertiary-to-background: linear-gradient(to bottom,var(--wp--preset--color--tertiary) 0%,var(--wp--preset--color--background) 100%);--wp--preset--gradient--diagonal-primary-to-foreground: linear-gradient(to bottom right,var(--wp--preset--color--primary) 0%,var(--wp--preset--color--foreground) 100%);--wp--preset--gradient--diagonal-secondary-to-background: linear-gradient(to bottom right,var(--wp--preset--color--secondary) 50%,var(--wp--preset--color--background) 50%);--wp--preset--gradient--diagonal-background-to-secondary: linear-gradient(to bottom right,var(--wp--preset--color--background) 50%,var(--wp--preset--color--secondary) 50%);--wp--preset--gradient--diagonal-tertiary-to-background: linear-gradient(to bottom right,var(--wp--preset--color--tertiary) 50%,var(--wp--preset--color--background) 50%);--wp--preset--gradient--diagonal-background-to-tertiary: linear-gradient(to bottom right,var(--wp--preset--color--background) 50%,var(--wp--preset--color--tertiary) 50%);--wp--preset--font-size--small: 1rem;--wp--preset--font-size--medium: 1.25rem;--wp--preset--font-size--large: clamp(1.39rem, 1.39rem + ((1vw - 0.2rem) * 1.433), 2.25rem);--wp--preset--font-size--x-large: clamp(1.5rem, 1.5rem + ((1vw - 0.2rem) * 2.5), 3rem);--wp--preset--font-size--heading-small: clamp(1.25rem, 1.25rem + ((1vw - 0.2rem) * 0.417), 1.5rem);--wp--preset--font-size--heading-medium: clamp(1.5rem, 1.5rem + ((1vw - 0.2rem) * 0.625), 1.875rem);--wp--preset--font-size--xx-large: clamp(1.85rem, 1.85rem + ((1vw - 0.2rem) * 3.167), 3.75rem);--wp--preset--font-family--inter: "Inter", sans-serif;--wp--preset--spacing--20: 1rem;--wp--preset--spacing--30: clamp(1.5rem, 6vw, 2rem);--wp--preset--spacing--40: clamp(2rem, 8vw, 3rem);--wp--preset--spacing--50: clamp(2.5rem, 8vw, 4rem);--wp--preset--spacing--60: clamp(3.5rem, 10vw, 6rem);--wp--preset--spacing--70: clamp(4rem, 15vw, 7rem);--wp--preset--spacing--80: 5.06rem;--wp--preset--spacing--55: clamp(3rem, 12vw, 5rem);--wp--preset--shadow--natural: 6px 6px 9px rgba(0, 0, 0, 0.2);--wp--preset--shadow--deep: 12px 12px 50px rgba(0, 0, 0, 0.4);--wp--preset--shadow--sharp: 6px 6px 0px rgba(0, 0, 0, 0.2);--wp--preset--shadow--outlined: 6px 6px 0px -3px rgb(255, 255, 255), 6px 6px rgb(0, 0, 0);--wp--preset--shadow--crisp: 6px 6px 0px rgb(0, 0, 0);--wp--preset--shadow--brutalism: 6px 6px 0 var(--wp--preset--color--foreground);--wp--preset--shadow--brutalism-small: 4px 4px 0 var(--wp--preset--color--foreground);--wp--preset--shadow--soft: 0 6px 10px rgba(0, 0, 0, 0.18);--wp--preset--shadow--soft-lg: 0 10px 16px rgba(0, 0, 0, 0.22);--wp--custom--blocks--core-table--variant-stripes--color--background: var(--wp--preset--color--tertiary);--wp--custom--typography--font-smoothing--moz: grayscale;--wp--custom--typography--font-smoothing--webkit: antialiased;--wp--custom--typography--font-weight--black: 900;--wp--custom--typography--font-weight--extra-bold: 800;--wp--custom--typography--font-weight--bold: 700;--wp--custom--typography--font-weight--semi-bold: 600;--wp--custom--typography--font-weight--medium: 500;--wp--custom--typography--font-weight--regular: 400;--wp--custom--typography--font-weight--light: 300;--wp--custom--typography--font-weight--extra-light: 200;--wp--custom--typography--font-weight--thin: 100;--wp--custom--typography--line-height--tiny: 1.15;--wp--custom--typography--line-height--small: 1.2;--wp--custom--typography--line-height--medium: 1.4;--wp--custom--typography--line-height--normal: 1.6;--wp--custom--typography--line-height--large: 1.8;--wp--custom--elements--button--border--radius: 2rem;--wp--custom--elements--button--color--background: var(--wp--preset--color--primary);--wp--custom--elements--button--color--text: var(--wp--preset--color--background);--wp--custom--elements--button--hover--color--background: var(--wp--preset--color--foreground);--wp--custom--elements--button--hover--color--text: var(--wp--preset--color--background);--wp--custom--elements--button--focus--color--background: var(--wp--preset--color--primary);--wp--custom--elements--button--focus--color--text: var(--wp--preset--color--background);--wp--custom--elements--input--border--radius: 4px;--wp--custom--elements--input--border--width: 1px;--wp--custom--elements--input--border--color: var(--wp--preset--color--foreground);--wp--custom--elements--input--color--background: var(--wp--preset--color--background);--wp--custom--elements--input--color--text: var(--wp--preset--color--foreground);--wp--custom--elements--input--spacing--padding--bottom: calc(0.667em + 1px);--wp--custom--elements--input--spacing--padding--left: calc(1.333em + 1px);--wp--custom--elements--input--spacing--padding--right: calc(1.333em + 1px);--wp--custom--elements--input--spacing--padding--top: calc(0.667em + 1px);--wp--custom--elements--input--typography--font-size: 1.15rem;--wp--custom--elements--input--typography--font-weight: var(--wp--custom--font-weight--regular);--wp--custom--elements--input--typography--line-height: 1.384;}:root { --wp--style--global--content-size: 42rem;--wp--style--global--wide-size: 80rem; }:where(body) { margin: 0; }.wp-site-blocks { padding-top: var(--wp--style--root--padding-top); padding-bottom: var(--wp--style--root--padding-bottom); }.has-global-padding { padding-right: var(--wp--style--root--padding-right); padding-left: var(--wp--style--root--padding-left); }.has-global-padding > .alignfull { margin-right: calc(var(--wp--style--root--padding-right) * -1); margin-left: calc(var(--wp--style--root--padding-left) * -1); }.has-global-padding :where(:not(.alignfull.is-layout-flow) > .has-global-padding:not(.wp-block-block, .alignfull)) { padding-right: 0; padding-left: 0; }.has-global-padding :where(:not(.alignfull.is-layout-flow) > .has-global-padding:not(.wp-block-block, .alignfull)) > .alignfull { margin-left: 0; margin-right: 0; }.wp-site-blocks > .alignleft { float: left; margin-right: 2em; }.wp-site-blocks > .alignright { float: right; margin-left: 2em; }.wp-site-blocks > .aligncenter { justify-content: center; margin-left: auto; margin-right: auto; }:where(.wp-site-blocks) > * { margin-block-start: var(--wp--preset--spacing--30); margin-block-end: 0; }:where(.wp-site-blocks) > :first-child { margin-block-start: 0; }:where(.wp-site-blocks) > :last-child { margin-block-end: 0; }:root { --wp--style--block-gap: var(--wp--preset--spacing--30); }:root :where(.is-layout-flow) > :first-child{margin-block-start: 0;}:root :where(.is-layout-flow) > :last-child{margin-block-end: 0;}:root :where(.is-layout-flow) > *{margin-block-start: var(--wp--preset--spacing--30);margin-block-end: 0;}:root :where(.is-layout-constrained) > :first-child{margin-block-start: 0;}:root :where(.is-layout-constrained) > :last-child{margin-block-end: 0;}:root :where(.is-layout-constrained) > *{margin-block-start: var(--wp--preset--spacing--30);margin-block-end: 0;}:root :where(.is-layout-flex){gap: var(--wp--preset--spacing--30);}:root :where(.is-layout-grid){gap: var(--wp--preset--spacing--30);}.is-layout-flow > .alignleft{float: left;margin-inline-start: 0;margin-inline-end: 2em;}.is-layout-flow > .alignright{float: right;margin-inline-start: 2em;margin-inline-end: 0;}.is-layout-flow > .aligncenter{margin-left: auto !important;margin-right: auto !important;}.is-layout-constrained > .alignleft{float: left;margin-inline-start: 0;margin-inline-end: 2em;}.is-layout-constrained > .alignright{float: right;margin-inline-start: 2em;margin-inline-end: 0;}.is-layout-constrained > .aligncenter{margin-left: auto !important;margin-right: auto !important;}.is-layout-constrained > :where(:not(.alignleft):not(.alignright):not(.alignfull)){max-width: var(--wp--style--global--content-size);margin-left: auto !important;margin-right: auto !important;}.is-layout-constrained > .alignwide{max-width: var(--wp--style--global--wide-size);}body .is-layout-flex{display: flex;}.is-layout-flex{flex-wrap: wrap;align-items: center;}.is-layout-flex > :is(*, div){margin: 0;}body .is-layout-grid{display: grid;}.is-layout-grid > :is(*, div){margin: 0;}body{background-color: var(--wp--preset--color--background);color: var(--wp--preset--color--foreground);font-family: var(--wp--preset--font-family--inter);font-size: clamp(0.875rem, 0.875rem + ((1vw - 0.2rem) * 0.417), 1.125rem);font-weight: 400;line-height: var(--wp--custom--typography--line-height--normal);--wp--style--root--padding-top: 0;--wp--style--root--padding-right: var(--wp--preset--spacing--30);--wp--style--root--padding-bottom: 0;--wp--style--root--padding-left: var(--wp--preset--spacing--30);}a:where(:not(.wp-element-button)){color: var(--wp--preset--color--foreground);text-decoration: none;}h1, h2, h3, h4, h5, h6{font-family: var(--wp--preset--font-family--inter);}h1{font-size: var(--wp--preset--font-size--xx-large);font-weight: var(--wp--custom--typography--font-weight--semi-bold);letter-spacing: -0.02em;line-height: var(--wp--custom--typography--line-height--tiny);}h2{font-size: var(--wp--preset--font-size--x-large);font-weight: var(--wp--custom--typography--font-weight--semi-bold);letter-spacing: -0.02em;line-height: var(--wp--custom--typography--line-height--tiny);}h3{font-size: var(--wp--preset--font-size--large);font-weight: var(--wp--custom--typography--font-weight--semi-bold);letter-spacing: -0.02em;line-height: var(--wp--custom--typography--line-height--tiny);}h4{font-size: var(--wp--preset--font-size--heading-medium);font-weight: var(--wp--custom--typography--font-weight--semi-bold);line-height: var(--wp--custom--typography--line-height--tiny);}h5{font-size: var(--wp--preset--font-size--heading-small);font-weight: var(--wp--custom--typography--font-weight--medium);line-height: var(--wp--custom--typography--line-height--normal);text-transform: uppercase;}h6{font-size: clamp(0.875rem, 0.875rem + ((1vw - 0.2rem) * 0.417), 1.125rem);font-weight: 400;letter-spacing: 0.03em;line-height: var(--wp--custom--typography--line-height--normal);text-transform: uppercase;}:root :where(.wp-element-button, .wp-block-button__link){background-color: var(--wp--custom--elements--button--color--background);border-radius: var(--wp--custom--elements--button--border--radius);border-width: 0;color: var(--wp--custom--elements--button--color--text);font-family: inherit;font-size: inherit;font-style: inherit;font-weight: var(--wp--custom--typography--font-weight--medium);letter-spacing: inherit;line-height: inherit;padding-top: calc(0.667em + 2px);padding-right: calc(1.333em + 2px);padding-bottom: calc(0.667em + 2px);padding-left: calc(1.333em + 2px);text-decoration: none;text-transform: inherit;box-shadow: var(--wp--preset--shadow--soft);}:root :where(.wp-element-button:hover, .wp-block-button__link:hover){background-color: var(--wp--custom--elements--button--hover--color--background);color: var(--wp--custom--elements--button--hover--color--text);}:root :where(.wp-element-button:focus, .wp-block-button__link:focus){background-color: var(--wp--custom--elements--button--focus--color--background);color: var(--wp--custom--elements--button--focus--color--text);outline-color: var(--wp--custom--elements--button--focus--color--background);outline-offset: 2px;}:root :where(.wp-element-button:active, .wp-block-button__link:active){background-color: var(--wp--custom--elements--button--hover--color--background);color: var(--wp--custom--elements--button--hover--color--text);}.has-black-color{color: var(--wp--preset--color--black) !important;}.has-cyan-bluish-gray-color{color: var(--wp--preset--color--cyan-bluish-gray) !important;}.has-white-color{color: var(--wp--preset--color--white) !important;}.has-pale-pink-color{color: var(--wp--preset--color--pale-pink) !important;}.has-vivid-red-color{color: var(--wp--preset--color--vivid-red) !important;}.has-luminous-vivid-orange-color{color: var(--wp--preset--color--luminous-vivid-orange) !important;}.has-luminous-vivid-amber-color{color: var(--wp--preset--color--luminous-vivid-amber) !important;}.has-light-green-cyan-color{color: var(--wp--preset--color--light-green-cyan) !important;}.has-vivid-green-cyan-color{color: var(--wp--preset--color--vivid-green-cyan) !important;}.has-pale-cyan-blue-color{color: var(--wp--preset--color--pale-cyan-blue) !important;}.has-vivid-cyan-blue-color{color: var(--wp--preset--color--vivid-cyan-blue) !important;}.has-vivid-purple-color{color: var(--wp--preset--color--vivid-purple) !important;}.has-background-color{color: var(--wp--preset--color--background) !important;}.has-foreground-color{color: var(--wp--preset--color--foreground) !important;}.has-primary-color{color: var(--wp--preset--color--primary) !important;}.has-secondary-color{color: var(--wp--preset--color--secondary) !important;}.has-tertiary-color{color: var(--wp--preset--color--tertiary) !important;}.has-foreground-alt-color{color: var(--wp--preset--color--foreground-alt) !important;}.has-muted-color{color: var(--wp--preset--color--muted) !important;}.has-black-background-color{background-color: var(--wp--preset--color--black) !important;}.has-cyan-bluish-gray-background-color{background-color: var(--wp--preset--color--cyan-bluish-gray) !important;}.has-white-background-color{background-color: var(--wp--preset--color--white) !important;}.has-pale-pink-background-color{background-color: var(--wp--preset--color--pale-pink) !important;}.has-vivid-red-background-color{background-color: var(--wp--preset--color--vivid-red) !important;}.has-luminous-vivid-orange-background-color{background-color: var(--wp--preset--color--luminous-vivid-orange) !important;}.has-luminous-vivid-amber-background-color{background-color: var(--wp--preset--color--luminous-vivid-amber) !important;}.has-light-green-cyan-background-color{background-color: var(--wp--preset--color--light-green-cyan) !important;}.has-vivid-green-cyan-background-color{background-color: var(--wp--preset--color--vivid-green-cyan) !important;}.has-pale-cyan-blue-background-color{background-color: var(--wp--preset--color--pale-cyan-blue) !important;}.has-vivid-cyan-blue-background-color{background-color: var(--wp--preset--color--vivid-cyan-blue) !important;}.has-vivid-purple-background-color{background-color: var(--wp--preset--color--vivid-purple) !important;}.has-background-background-color{background-color: var(--wp--preset--color--background) !important;}.has-foreground-background-color{background-color: var(--wp--preset--color--foreground) !important;}.has-primary-background-color{background-color: var(--wp--preset--color--primary) !important;}.has-secondary-background-color{background-color: var(--wp--preset--color--secondary) !important;}.has-tertiary-background-color{background-color: var(--wp--preset--color--tertiary) !important;}.has-foreground-alt-background-color{background-color: var(--wp--preset--color--foreground-alt) !important;}.has-muted-background-color{background-color: var(--wp--preset--color--muted) !important;}.has-black-border-color{border-color: var(--wp--preset--color--black) !important;}.has-cyan-bluish-gray-border-color{border-color: var(--wp--preset--color--cyan-bluish-gray) !important;}.has-white-border-color{border-color: var(--wp--preset--color--white) !important;}.has-pale-pink-border-color{border-color: var(--wp--preset--color--pale-pink) !important;}.has-vivid-red-border-color{border-color: var(--wp--preset--color--vivid-red) !important;}.has-luminous-vivid-orange-border-color{border-color: var(--wp--preset--color--luminous-vivid-orange) !important;}.has-luminous-vivid-amber-border-color{border-color: var(--wp--preset--color--luminous-vivid-amber) !important;}.has-light-green-cyan-border-color{border-color: var(--wp--preset--color--light-green-cyan) !important;}.has-vivid-green-cyan-border-color{border-color: var(--wp--preset--color--vivid-green-cyan) !important;}.has-pale-cyan-blue-border-color{border-color: var(--wp--preset--color--pale-cyan-blue) !important;}.has-vivid-cyan-blue-border-color{border-color: var(--wp--preset--color--vivid-cyan-blue) !important;}.has-vivid-purple-border-color{border-color: var(--wp--preset--color--vivid-purple) !important;}.has-background-border-color{border-color: var(--wp--preset--color--background) !important;}.has-foreground-border-color{border-color: var(--wp--preset--color--foreground) !important;}.has-primary-border-color{border-color: var(--wp--preset--color--primary) !important;}.has-secondary-border-color{border-color: var(--wp--preset--color--secondary) !important;}.has-tertiary-border-color{border-color: var(--wp--preset--color--tertiary) !important;}.has-foreground-alt-border-color{border-color: var(--wp--preset--color--foreground-alt) !important;}.has-muted-border-color{border-color: var(--wp--preset--color--muted) !important;}.has-vivid-cyan-blue-to-vivid-purple-gradient-background{background: var(--wp--preset--gradient--vivid-cyan-blue-to-vivid-purple) !important;}.has-light-green-cyan-to-vivid-green-cyan-gradient-background{background: var(--wp--preset--gradient--light-green-cyan-to-vivid-green-cyan) !important;}.has-luminous-vivid-amber-to-luminous-vivid-orange-gradient-background{background: var(--wp--preset--gradient--luminous-vivid-amber-to-luminous-vivid-orange) !important;}.has-luminous-vivid-orange-to-vivid-red-gradient-background{background: var(--wp--preset--gradient--luminous-vivid-orange-to-vivid-red) !important;}.has-very-light-gray-to-cyan-bluish-gray-gradient-background{background: var(--wp--preset--gradient--very-light-gray-to-cyan-bluish-gray) !important;}.has-cool-to-warm-spectrum-gradient-background{background: var(--wp--preset--gradient--cool-to-warm-spectrum) !important;}.has-blush-light-purple-gradient-background{background: var(--wp--preset--gradient--blush-light-purple) !important;}.has-blush-bordeaux-gradient-background{background: var(--wp--preset--gradient--blush-bordeaux) !important;}.has-luminous-dusk-gradient-background{background: var(--wp--preset--gradient--luminous-dusk) !important;}.has-pale-ocean-gradient-background{background: var(--wp--preset--gradient--pale-ocean) !important;}.has-electric-grass-gradient-background{background: var(--wp--preset--gradient--electric-grass) !important;}.has-midnight-gradient-background{background: var(--wp--preset--gradient--midnight) !important;}.has-vertical-secondary-to-tertiary-gradient-background{background: var(--wp--preset--gradient--vertical-secondary-to-tertiary) !important;}.has-vertical-secondary-to-background-gradient-background{background: var(--wp--preset--gradient--vertical-secondary-to-background) !important;}.has-vertical-tertiary-to-background-gradient-background{background: var(--wp--preset--gradient--vertical-tertiary-to-background) !important;}.has-diagonal-primary-to-foreground-gradient-background{background: var(--wp--preset--gradient--diagonal-primary-to-foreground) !important;}.has-diagonal-secondary-to-background-gradient-background{background: var(--wp--preset--gradient--diagonal-secondary-to-background) !important;}.has-diagonal-background-to-secondary-gradient-background{background: var(--wp--preset--gradient--diagonal-background-to-secondary) !important;}.has-diagonal-tertiary-to-background-gradient-background{background: var(--wp--preset--gradient--diagonal-tertiary-to-background) !important;}.has-diagonal-background-to-tertiary-gradient-background{background: var(--wp--preset--gradient--diagonal-background-to-tertiary) !important;}.has-small-font-size{font-size: var(--wp--preset--font-size--small) !important;}.has-medium-font-size{font-size: var(--wp--preset--font-size--medium) !important;}.has-large-font-size{font-size: var(--wp--preset--font-size--large) !important;}.has-x-large-font-size{font-size: var(--wp--preset--font-size--x-large) !important;}.has-heading-small-font-size{font-size: var(--wp--preset--font-size--heading-small) !important;}.has-heading-medium-font-size{font-size: var(--wp--preset--font-size--heading-medium) !important;}.has-xx-large-font-size{font-size: var(--wp--preset--font-size--xx-large) !important;}.has-inter-font-family{font-family: var(--wp--preset--font-family--inter) !important;}
+:root :where(.wp-block-navigation){font-size: var(--wp--preset--font-size--small);}
+:root :where(.wp-block-post-date){font-size: var(--wp--preset--font-size--small);text-decoration: none;text-transform: uppercase;}
+:root :where(.wp-block-post-terms){font-size: var(--wp--preset--font-size--small);}
+:root :where(.wp-block-post-terms a:where(:not(.wp-element-button))){text-decoration: none;}
+:root :where(.wp-block-post-terms a:where(:not(.wp-element-button)):hover){text-decoration: underline;}
+:root :where(.wp-block-post-terms a:where(:not(.wp-element-button)):focus){text-decoration: underline dashed;}
+:root :where(.wp-block-post-terms a:where(:not(.wp-element-button)):active){color: var(--wp--preset--color--secondary);text-decoration: none;}
+:root :where(.wp-block-post-title a:where(:not(.wp-element-button))){text-decoration: none;}
+:root :where(.wp-block-post-title a:where(:not(.wp-element-button)):hover){text-decoration: underline;}
+:root :where(.wp-block-post-title a:where(:not(.wp-element-button)):focus){text-decoration: underline dashed;}
+:root :where(.wp-block-post-title a:where(:not(.wp-element-button)):active){color: var(--wp--preset--color--secondary);text-decoration: none;}
+:root :where(.wp-block-quote){border-color: var(--wp--preset--color--primary);border-width: 0 0 0 1px;border-style: solid;margin-top: var(--wp--custom--spacing--large) !important;margin-bottom: var(--wp--custom--spacing--large) !important;}
+:root :where(.wp-block-separator){color: var(--wp--preset--color--foreground);}
+:root :where(.wp-block-site-title){font-family: var(--wp--preset--font-family--inter);font-size: var(--wp--preset--font-size--large);font-weight: var(--wp--custom--typography--font-weight--bold);line-height: var(--wp--custom--typography--line-height--tiny);}
+:root :where(.wp-block-template-part){margin-top: 0px;}
+/*# sourceURL=global-styles-inline-css */
+</style>
+<style id='core-block-supports-inline-css'>
+.wp-container-core-group-is-layout-f1189ed3{flex-wrap:nowrap;gap:var(--wp--preset--spacing--20);}.wp-container-core-navigation-is-layout-f665d2b5{justify-content:flex-end;}.wp-container-core-group-is-layout-6c531013{flex-wrap:nowrap;}.wp-container-core-group-is-layout-cb46ffcb{flex-wrap:nowrap;justify-content:space-between;}.wp-container-core-group-is-layout-43965c52 > *{margin-block-start:0;margin-block-end:0;}.wp-container-core-group-is-layout-43965c52 > * + *{margin-block-start:0;margin-block-end:0;}.wp-container-core-group-is-layout-7d13c79f > *{margin-block-start:0;margin-block-end:0;}.wp-container-core-group-is-layout-7d13c79f > * + *{margin-block-start:0.5rem;margin-block-end:0;}.wp-container-core-group-is-layout-c4378f5b > *{margin-block-start:0;margin-block-end:0;}.wp-container-core-group-is-layout-c4378f5b > * + *{margin-block-start:2.5rem;margin-block-end:0;}.wp-container-core-group-is-layout-268ff4a9{gap:0rem;flex-direction:column;align-items:flex-start;}.wp-container-core-group-is-layout-3b6f4345 > *{margin-block-start:0;margin-block-end:0;}.wp-container-core-group-is-layout-3b6f4345 > * + *{margin-block-start:1.2rem;margin-block-end:0;}.wp-container-core-group-is-layout-410b5bd8 > *{margin-block-start:0;margin-block-end:0;}.wp-container-core-group-is-layout-410b5bd8 > * + *{margin-block-start:2rem;margin-block-end:0;}.wp-container-core-group-is-layout-3b4e9d3e{flex-wrap:nowrap;gap:1rem;}.wp-container-core-social-links-is-layout-72308760{flex-wrap:nowrap;gap:1rem;justify-content:flex-end;}
+/*# sourceURL=core-block-supports-inline-css */
+</style>
+<style id='wp-block-template-skip-link-inline-css'>
+
+		.skip-link.screen-reader-text {
+			border: 0;
+			clip-path: inset(50%);
+			height: 1px;
+			margin: -1px;
+			overflow: hidden;
+			padding: 0;
+			position: absolute !important;
+			width: 1px;
+			word-wrap: normal !important;
+		}
+
+		.skip-link.screen-reader-text:focus {
+			background-color: #eee;
+			clip-path: none;
+			color: #444;
+			display: block;
+			font-size: 1em;
+			height: auto;
+			left: 5px;
+			line-height: normal;
+			padding: 15px 23px 14px;
+			text-decoration: none;
+			top: 5px;
+			width: auto;
+			z-index: 100000;
+		}
+/*# sourceURL=wp-block-template-skip-link-inline-css */
+</style>
+<link rel='stylesheet' id='severino-labs-style-css' href='../../wp-content/themes/severino-labs-extendable/style.css' media='all' />
+
+<!-- Google tag (gtag.js) snippet added by Site Kit -->
+<!-- Google Analytics snippet added by Site Kit -->
+<script src="https://www.googletagmanager.com/gtag/js?id=GT-T5RSKX8Q" id="google_gtagjs-js" async></script>
+<script id="google_gtagjs-js-after">
+window.dataLayer = window.dataLayer || [];function gtag(){dataLayer.push(arguments);}
+gtag("set","linker",{"domains":["jseverino.com"]});
+gtag("js", new Date());
+gtag("set", "developer_id.dZTNiMT", true);
+gtag("config", "GT-T5RSKX8Q", {"googlesitekit_post_type":"post","googlesitekit_post_author":"joe"});
+ window._googlesitekit = window._googlesitekit || {}; window._googlesitekit.throttledEvents = []; window._googlesitekit.gtagEvent = (name, data) => { var key = JSON.stringify( { name, data } ); if ( !! window._googlesitekit.throttledEvents[ key ] ) { return; } window._googlesitekit.throttledEvents[ key ] = true; setTimeout( () => { delete window._googlesitekit.throttledEvents[ key ]; }, 5 ); gtag( "event", name, { ...data, event_source: "site-kit" } ); }; 
+//# sourceURL=google_gtagjs-js-after
+</script>
+<link rel="https://api.w.org/" href="https://jseverino.com/wp-json/" /><link rel="alternate" title="JSON" type="application/json" href="https://jseverino.com/wp-json/wp/v2/posts/169" /><link rel="EditURI" type="application/rsd+xml" title="RSD" href="https://jseverino.com/xmlrpc.php?rsd" />
+<link rel='shortlink' href='/portfolio/securing-my-wordpress-site/' />
+<meta name="generator" content="Site Kit by Google 1.178.0" /><script type="application/ld+json">{"@context":"https://schema.org","@graph":[{"@type":"Article","name":"Article","url":"https://jseverino.com/portfolio/securing-my-wordpress-site/","headline":"Securing My WordPress Site with Cloudflare, CSP, and Passkey Authentication","description":"A WordPress hardening project that combines Cloudflare edge security, a custom security plugin, browser-enforced policies, reduced default exposure, and a...","datePublished":"2026-04-23T09:22:00+00:00","dateModified":"2026-04-27T02:44:34+00:00","wordCount":"3731","image":"https://jseverino.com/wp-content/uploads/sites/2/2026/04/cover.png","Author":{"@type":"Person","name":"joe","url":"https://jseverino.com/portfolio/securing-my-wordpress-site/"},"@id":"https://jseverino.com/portfolio/securing-my-wordpress-site/#article"},{"@type":"WebSite","name":"Joe Severino","description":"Cybersecurity • IT Project Management","url":"https://jseverino.com","inLanguage":"en_US","@id":"https://jseverino.com#website"},{"@type":"WebPage","name":"Securing My WordPress Site with Cloudflare, CSP, and Passkey Authentication","url":"https://jseverino.com/portfolio/securing-my-wordpress-site/","description":"A WordPress hardening project that combines Cloudflare edge security, a custom security plugin, browser-enforced policies, reduced default exposure, and a...","publisher":"joe","inLanguage":"en_US","@id":"https://jseverino.com/portfolio/securing-my-wordpress-site/#webpage"},{"@type":"BreadcrumbList","@id":"https://jseverino.com/portfolio/securing-my-wordpress-site/#breadcrumblist","itemListElement":[{"@type":"ListItem","position":1,"item":{"@id":"https://jseverino.com","name":"Home"}},{"@type":"ListItem","position":2,"item":{"@id":"https://jseverino.com/category/portfolio/flagship/","name":"Flagship"}},{"@type":"ListItem","position":3,"item":{"@id":"https://jseverino.com/portfolio/securing-my-wordpress-site/","name":"Securing My WordPress Site with Cloudflare, CSP, and Passkey Authentication"}}]},{"@type":"SearchAction","@id":"https://jseverino.com#searchaction","target":"https://jseverino.com/?s={search_term_string}","query-input":"required name=search_term_string"},{"@type":"Person","name":"joe","url":"https://jseverino.com/author/","brand":"Joe Severino","description":"Cybersecurity • IT Project Management","image":"https://secure.gravatar.com/avatar/87e70ebdcd90fefabfc237c81331cf3cc06db88c840b09f82889c9ef37f38d59?s=96&d=mm&r=g","@id":"https://jseverino.com/author/#person"}]}</script>
+<meta name="google-site-verification" content="XHSPr8iKO17CVwCim0rs4f5LWb0gq2lxoF4YfonBpLw" />
+<script type="importmap" id="wp-importmap">
+{"imports":{"@wordpress/interactivity":"https://jseverino.com/wp-includes/js/dist/script-modules/interactivity/index.min.js?ver=66c613f68580994bb00a"}}
+</script>
+<link rel="modulepreload" href="../../wp-includes/js/dist/script-modules/interactivity/index.min.js" id="@wordpress/interactivity-js-modulepreload" fetchpriority="low">
+<style class='wp-fonts-local'>
+@font-face{font-family:Inter;font-style:normal;font-weight:200 900;font-display:swap;src:url('../../wp-content/themes/severino-labs-extendable/assets/fonts/inter/inter-variable.woff2') format('woff2');font-stretch:normal;}
+</style>
+<link rel="icon" href="../../wp-content/uploads/sites/2/2025/08/cropped-JS-2-32x32.png" sizes="32x32" />
+<link rel="icon" href="../../wp-content/uploads/sites/2/2025/08/cropped-JS-2-192x192.png" sizes="192x192" />
+<link rel="apple-touch-icon" href="../../wp-content/uploads/sites/2/2025/08/cropped-JS-2-180x180.png" />
+<meta name="msapplication-TileImage" content="https://jseverino.com/wp-content/uploads/sites/2/2025/08/cropped-JS-2-270x270.png" />
+</head>
+
+<body class="wp-singular post-template-default single single-post postid-169 single-format-standard wp-embed-responsive wp-theme-severino-labs-extendable">
+
+<div class="wp-site-blocks"><header class="site-sticky-header wp-block-template-part">
+<div class="wp-block-group alignfull has-global-padding is-layout-constrained wp-container-core-group-is-layout-43965c52 wp-block-group-is-layout-constrained" style="border-style:none;border-width:0px;margin-top:0;margin-bottom:0;padding-top:var(--wp--preset--spacing--20);padding-bottom:var(--wp--preset--spacing--20)">
+
+	
+	<div class="wp-block-group alignwide is-content-justification-space-between is-nowrap is-layout-flex wp-container-core-group-is-layout-cb46ffcb wp-block-group-is-layout-flex">
+
+		
+		<div class="wp-block-group is-nowrap is-layout-flex wp-container-core-group-is-layout-f1189ed3 wp-block-group-is-layout-flex">
+			
+
+			
+			<div class="wp-block-group is-layout-flow wp-block-group-is-layout-flow">
+				<h1 style="text-transform:uppercase;" class="wp-block-site-title has-medium-font-size"><a href="../../index.html" target="_self" rel="home">Joe Severino</a></h1>
+			</div>
+			
+		</div>
+		
+
+		
+		<div class="wp-block-group is-nowrap is-layout-flex wp-container-core-group-is-layout-6c531013 wp-block-group-is-layout-flex">
+			<nav class="is-responsive items-justified-right wp-block-navigation is-content-justification-right is-layout-flex wp-container-core-navigation-is-layout-f665d2b5 wp-block-navigation-is-layout-flex" aria-label="Menu" 
+		 data-wp-interactive="core/navigation" data-wp-context='{"overlayOpenedBy":{"click":false,"hover":false,"focus":false},"type":"overlay","roleAttribute":"","ariaLabel":"Menu"}'><button aria-haspopup="dialog" aria-label="Open menu" class="wp-block-navigation__responsive-container-open" 
+				data-wp-on--click="actions.openMenuOnClick"
+				data-wp-on--keydown="actions.handleMenuKeydown"
+			><svg width="24" height="24" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M5 5v1.5h14V5H5z"></path><path d="M5 12.8h14v-1.5H5v1.5z"></path><path d="M5 19h14v-1.5H5V19z"></path></svg></button>
+				<div class="wp-block-navigation__responsive-container  has-text-color has-foreground-color has-background has-background-background-color"  id="modal-1" 
+				data-wp-class--has-modal-open="state.isMenuOpen"
+				data-wp-class--is-menu-open="state.isMenuOpen"
+				data-wp-watch="callbacks.initMenu"
+				data-wp-on--keydown="actions.handleMenuKeydown"
+				data-wp-on--focusout="actions.handleMenuFocusout"
+				tabindex="-1"
+			>
+					<div class="wp-block-navigation__responsive-close" tabindex="-1">
+						<div class="wp-block-navigation__responsive-dialog" 
+				data-wp-bind--aria-modal="state.ariaModal"
+				data-wp-bind--aria-label="state.ariaLabel"
+				data-wp-bind--role="state.roleAttribute"
+			>
+							<button aria-label="Close menu" class="wp-block-navigation__responsive-container-close" 
+				data-wp-on--click="actions.closeMenuOnClick"
+			><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24" aria-hidden="true" focusable="false"><path d="m13.06 12 6.47-6.47-1.06-1.06L12 10.94 5.53 4.47 4.47 5.53 10.94 12l-6.47 6.47 1.06 1.06L12 13.06l6.47 6.47 1.06-1.06L13.06 12Z"></path></svg></button>
+							<div class="wp-block-navigation__responsive-container-content" 
+				data-wp-watch="callbacks.focusFirstElement"
+			 id="modal-1-content">
+								<ul class="wp-block-navigation__container is-responsive items-justified-right wp-block-navigation"><li class=" wp-block-navigation-item wp-block-navigation-link"><a class="wp-block-navigation-item__content"  href="/about/"><span class="wp-block-navigation-item__label">About</span></a></li><li class=" wp-block-navigation-item wp-block-navigation-link"><a class="wp-block-navigation-item__content"  href="../index.html"><span class="wp-block-navigation-item__label">Portfolio</span></a></li><li class=" wp-block-navigation-item wp-block-navigation-link"><a class="wp-block-navigation-item__content"  href="/resume/"><span class="wp-block-navigation-item__label">Resume</span></a></li><li class=" wp-block-navigation-item wp-block-navigation-link"><a class="wp-block-navigation-item__content"  href="/contact/"><span class="wp-block-navigation-item__label">Contact</span></a></li></ul>
+							</div>
+						</div>
+					</div>
+				</div></nav>
+		</div>
+		
+
+	</div>
+	
+
+</div>
+</header>
+
+
+<main class="wp-block-group post-clean is-layout-flow wp-container-core-group-is-layout-410b5bd8 wp-block-group-is-layout-flow" style="margin-top:0px;margin-bottom:0px;padding-top:0px;padding-bottom:0px">
+<div class="wp-block-group has-global-padding is-layout-constrained wp-container-core-group-is-layout-c4378f5b wp-block-group-is-layout-constrained">
+<div class="wp-block-group has-global-padding is-layout-constrained wp-container-core-group-is-layout-7d13c79f wp-block-group-is-layout-constrained"><h1 class="wp-block-post-title has-x-large-font-size">Securing My WordPress Site with Cloudflare, CSP, and Passkey Authentication</h1>
+
+<div class="wp-block-post-date"><time datetime="2026-04-23T09:22:00-05:00">April 23, 2026</time></div></div>
+
+
+<figure style="aspect-ratio:16/9;" class="wp-block-post-featured-image"><img width="2258" height="1186" src="../../wp-content/uploads/sites/2/2026/04/cover.png" class="attachment-post-thumbnail size-post-thumbnail wp-post-image" alt="" style="border-radius:12px;border-width:2px;width:100%;height:100%;object-fit:cover;" decoding="async" fetchpriority="high" srcset="../../wp-content/uploads/sites/2/2026/04/cover.png 2258w, ../../wp-content/uploads/sites/2/2026/04/cover-300x158.png 300w, ../../wp-content/uploads/sites/2/2026/04/cover-1024x538.png 1024w, ../../wp-content/uploads/sites/2/2026/04/cover-768x403.png 768w, ../../wp-content/uploads/sites/2/2026/04/cover-1536x807.png 1536w, ../../wp-content/uploads/sites/2/2026/04/cover-2048x1076.png 2048w" sizes="(max-width: 2258px) 100vw, 2258px" /></figure></div>
+
+
+<div class="entry-content wp-block-post-content has-global-padding is-layout-constrained wp-block-post-content-is-layout-constrained">
+<h4 class="wp-block-heading">Overview</h4>
+
+
+
+<p>This project documents how I secured my personal WordPress site by reducing the default attack surface, enforcing browser security policies, and implementing a custom passkey-only login experience. Instead of relying on multiple generic security plugins, I built a security layer plugin to handle controls such as XML-RPC disablement, user enumeration protection, response headers, and Content Security Policy enforcement.</p>
+
+
+
+<p>I also use Cloudflare at the edge to strengthen transport security with HTTPS enforcement, modern TLS settings, HSTS, and Zero Trust access control for administrative endpoints. The result was a layered setup that combined edge security, device and identity-aware administrative access control, application-level hardening, and browser-enforced protections while keeping the site maintainable through a separate child theme and custom security plugin.</p>
+
+
+
+<h4 class="wp-block-heading">The Problem</h4>
+
+
+
+<p>Running a public WordPress site safely takes more than turning on HTTPS and using a strong password. Out of the box, WordPress exposes more than I wanted on an internet-facing site, including common login paths, unnecessary endpoints, and platform details that make reconnaissance easier.</p>
+
+
+
+<p>I wanted this site to be practical and secure. That meant reducing the default WordPress attack surface, adding stronger browser-enforced protections, and improving administrative authentication beyond a standard password workflow. Cloudflare was an important part of that, but edge protection alone was not enough. I also wanted the application itself to be more defensive.</p>
+
+
+
+<figure class="wp-block-image size-large"><img decoding="async" width="1024" height="681" src="../../wp-content/uploads/sites/2/2026/04/cloudflare-1024x681.png" alt="" class="wp-image-562" srcset="../../wp-content/uploads/sites/2/2026/04/cloudflare-1024x681.png 1024w, ../../wp-content/uploads/sites/2/2026/04/cloudflare-300x199.png 300w, ../../wp-content/uploads/sites/2/2026/04/cloudflare-768x510.png 768w, ../../wp-content/uploads/sites/2/2026/04/cloudflare-1536x1021.png 1536w, ../../wp-content/uploads/sites/2/2026/04/cloudflare-2048x1361.png 2048w" sizes="(max-width: 1024px) 100vw, 1024px" /><figcaption class="wp-element-caption">The site was already behind Cloudflare, but edge protection alone did not address WordPress-specific exposure or strengthen the administrative login flow.</figcaption></figure>
+
+
+
+<p>Passkeys were a major part of that goal. I wanted a cleaner, stronger login experience that eliminated reliance on the traditional username and password. But implementing that in WordPress was not as simple as installing a plugin and moving on. During setup, the WebAuthn flow introduced a real troubleshooting issue that had to be resolved before passkey registration worked correctly.</p>
+
+
+
+<p>This project came out of that full problem set: hardening a public WordPress site at the edge, in the application, and at the authentication layer while keeping the environment manageable day to day.</p>
+
+
+
+<h4 class="wp-block-heading">Edge Security with Cloudflare</h4>
+
+
+
+<p>Cloudflare sits in front of the site as the public-facing edge layer, which means web traffic reaches Cloudflare before it reaches the WordPress origin. That gives me a cleaner perimeter to manage and lets core DNS and transport controls live at the edge rather than relying on WordPress alone.</p>
+
+
+
+<figure class="wp-block-image size-large"><img decoding="async" width="1024" height="652" src="../../wp-content/uploads/sites/2/2026/04/DNS-1-1024x652.png" alt="" class="wp-image-630" srcset="../../wp-content/uploads/sites/2/2026/04/DNS-1-1024x652.png 1024w, ../../wp-content/uploads/sites/2/2026/04/DNS-1-300x191.png 300w, ../../wp-content/uploads/sites/2/2026/04/DNS-1-768x489.png 768w, ../../wp-content/uploads/sites/2/2026/04/DNS-1-1536x978.png 1536w, ../../wp-content/uploads/sites/2/2026/04/DNS-1.png 1656w" sizes="(max-width: 1024px) 100vw, 1024px" /><figcaption class="wp-element-caption">Cloudflare manages the site’s DNS layer, with proxied web records and DNS-only SPF, DKIM, and DMARC records. DMARC is configured with a reject policy to block unauthenticated mail claiming to come from the domain.</figcaption></figure>
+
+
+
+<p>Cloudflare also secures the site’s DNS layer with DNSSEC, adding signed DNS responses on top of the proxied records and domain-level email authentication controls.</p>
+
+
+
+<p>That edge role is not limited to DNS. Cloudflare also enforces how browsers connect to the site, which is where transport security becomes more meaningful than simply having HTTPS available. Instead of only serving the site over TLS, I configure the edge to require modern HTTPS behavior, including TLS 1.3 and browser-facing policy that treats HTTPS as the normal and expected path.</p>
+
+
+
+<figure class="wp-block-image size-large"><img loading="lazy" decoding="async" width="668" height="1024" src="../../wp-content/uploads/sites/2/2026/04/HSTS-668x1024.png" alt="" class="wp-image-564" srcset="../../wp-content/uploads/sites/2/2026/04/HSTS-668x1024.png 668w, ../../wp-content/uploads/sites/2/2026/04/HSTS-196x300.png 196w, ../../wp-content/uploads/sites/2/2026/04/HSTS-768x1178.png 768w, ../../wp-content/uploads/sites/2/2026/04/HSTS-1002x1536.png 1002w, ../../wp-content/uploads/sites/2/2026/04/HSTS.png 1012w" sizes="auto, (max-width: 668px) 100vw, 668px" /><figcaption class="wp-element-caption">Cloudflare is configured to send HSTS headers with a 12-month max-age and apply that policy across subdomains, while preload remains disabled.</figcaption></figure>
+
+
+
+<p>In this configuration, HSTS is enabled with a one-year max-age and the policy is extended to subdomains through includeSubDomains. That means supported browsers are instructed to continue using HTTPS for the domain and its subdomains once they have seen the policy. I leave preload disabled, which keeps the site off browser preload lists while still enforcing strict transport behavior after the first secure visit.</p>
+
+
+
+<p>I also added targeted Cloudflare custom rules for high-noise WordPress and file exposure probes. XML-RPC requests and sensitive file patterns such as <code>.env</code>, <code>.log</code>, <code>.bak</code>, and <code>.sql</code> are blocked at the edge, reducing unnecessary traffic to the origin and keeping those requests out of the WordPress application layer.</p>
+
+
+
+<figure class="wp-block-image size-large"><img loading="lazy" decoding="async" width="1024" height="560" src="../../wp-content/uploads/sites/2/2026/04/sec_rules-1024x560.png" alt="" class="wp-image-633" srcset="../../wp-content/uploads/sites/2/2026/04/sec_rules-1024x560.png 1024w, ../../wp-content/uploads/sites/2/2026/04/sec_rules-300x164.png 300w, ../../wp-content/uploads/sites/2/2026/04/sec_rules-768x420.png 768w, ../../wp-content/uploads/sites/2/2026/04/sec_rules-1536x841.png 1536w, ../../wp-content/uploads/sites/2/2026/04/sec_rules-2048x1121.png 2048w" sizes="auto, (max-width: 1024px) 100vw, 1024px" /><figcaption class="wp-element-caption">Cloudflare custom rules block XML-RPC and sensitive file patterns at the edge before requests reach the WordPress origin.</figcaption></figure>
+
+
+
+<p>I also added a direct-origin protection control so the site is not only relying on Cloudflare’s proxy behavior. Cloudflare injects a private request header containing a locally generated random hex value from <span class="cli-inline">openssl rand -hex 32</span> on origin-bound traffic, and a <code>.htaccess</code> rule at the web root requires that header before allowing the request to continue.</p>
+
+
+
+<figure class="wp-block-image size-large"><img loading="lazy" decoding="async" width="1024" height="698" src="../../wp-content/uploads/sites/2/2026/04/cf_header_rule-1024x698.png" alt="" class="wp-image-714" srcset="../../wp-content/uploads/sites/2/2026/04/cf_header_rule-1024x698.png 1024w, ../../wp-content/uploads/sites/2/2026/04/cf_header_rule-300x204.png 300w, ../../wp-content/uploads/sites/2/2026/04/cf_header_rule-768x523.png 768w, ../../wp-content/uploads/sites/2/2026/04/cf_header_rule-1536x1047.png 1536w, ../../wp-content/uploads/sites/2/2026/04/cf_header_rule-2048x1396.png 2048w" sizes="auto, (max-width: 1024px) 100vw, 1024px" /><figcaption class="wp-element-caption">Cloudflare injects a private request header on origin-bound traffic for the proxied site hostname, with the header value redacted.</figcaption></figure>
+
+
+
+<p>At the web root, the <code>.htaccess</code> rule blocks requests when the private Cloudflare-injected request header is missing or does not match the expected value.</p>
+
+
+
+<pre class="source-code-block"><code>RewriteCond %{HTTP:X-Severino-Origin-Auth} !^REDACTED_RANDOM_HEX_VALUE$
+RewriteRule ^ - [F,L]</code></pre>
+
+
+
+<p>This creates a simple origin trust boundary. Normal visitors reach the site through Cloudflare, the private header is added before the request reaches the origin, and the origin serves the page. If someone connects directly to the origin IP, the header is missing and the request is rejected with a <code>403 Forbidden</code> response.</p>
+
+
+
+<p>I validated the control from the terminal by testing both paths. A direct request to the origin IP returned <code>403 Forbidden</code>, while a normal request through the Cloudflare-proxied hostname returned <code>200 OK</code>.</p>
+
+
+
+<figure class="wp-block-image size-large"><img loading="lazy" decoding="async" width="1024" height="634" src="../../wp-content/uploads/sites/2/2026/04/header_curl_tests-1024x634.png" alt="" class="wp-image-712" srcset="../../wp-content/uploads/sites/2/2026/04/header_curl_tests-1024x634.png 1024w, ../../wp-content/uploads/sites/2/2026/04/header_curl_tests-300x186.png 300w, ../../wp-content/uploads/sites/2/2026/04/header_curl_tests-768x475.png 768w, ../../wp-content/uploads/sites/2/2026/04/header_curl_tests-1536x950.png 1536w, ../../wp-content/uploads/sites/2/2026/04/header_curl_tests-2048x1267.png 2048w" sizes="auto, (max-width: 1024px) 100vw, 1024px" /><figcaption class="wp-element-caption">A direct request to the origin IP returns 403 Forbidden, while the normal Cloudflare-proxied hostname returns 200 OK.</figcaption></figure>
+
+
+
+<p>This strengthens the site’s internet-facing boundary, but it does not harden WordPress by itself. Cloudflare improves the edge and transport layer; the WordPress attack surface, browser security headers beyond this setting, and authentication controls still need to be handled separately inside the stack.</p>
+
+
+
+<h4 class="wp-block-heading">Building a Custom WordPress Security Layer Plugin</h4>
+
+
+
+<p>Instead of relying on a third-party security plugin to handle core hardening decisions for me, I built my own WordPress security layer as a custom plugin. That gives me direct control over what the site does and does not expose, which matters more to me than installing a large security suite and accepting its defaults, feature set, and overhead.</p>
+
+
+
+<figure class="wp-block-image size-large"><img loading="lazy" decoding="async" width="1024" height="740" src="../../wp-content/uploads/sites/2/2026/04/plugins-3-1024x740.png" alt="" class="wp-image-640" srcset="../../wp-content/uploads/sites/2/2026/04/plugins-3-1024x740.png 1024w, ../../wp-content/uploads/sites/2/2026/04/plugins-3-300x217.png 300w, ../../wp-content/uploads/sites/2/2026/04/plugins-3-768x555.png 768w, ../../wp-content/uploads/sites/2/2026/04/plugins-3-1536x1110.png 1536w, ../../wp-content/uploads/sites/2/2026/04/plugins-3-2048x1480.png 2048w" sizes="auto, (max-width: 1024px) 100vw, 1024px" /><figcaption class="wp-element-caption">The custom Severino Labs Security Layer plugin runs as part of the live WordPress environment and centralizes site-specific hardening in one maintained layer.</figcaption></figure>
+
+
+
+<p>For this site, I want the application-side hardening to be explicit and understandable. A custom plugin lets me define that behavior myself: disabling XML-RPC, reducing user enumeration paths, removing the public WordPress version signal, sending browser security headers, and shaping the login experience around passkeys. Rather than spreading those controls across theme files, snippets, and multiple plugin settings pages, I keep them in one maintained layer that I fully understand.</p>
+
+
+
+<figure class="wp-block-image size-large"><img loading="lazy" decoding="async" width="1024" height="614" src="../../wp-content/uploads/sites/2/2026/04/ssh-php-1024x614.png" alt="" class="wp-image-567" srcset="../../wp-content/uploads/sites/2/2026/04/ssh-php-1024x614.png 1024w, ../../wp-content/uploads/sites/2/2026/04/ssh-php-300x180.png 300w, ../../wp-content/uploads/sites/2/2026/04/ssh-php-768x461.png 768w, ../../wp-content/uploads/sites/2/2026/04/ssh-php-1536x922.png 1536w, ../../wp-content/uploads/sites/2/2026/04/ssh-php-2048x1229.png 2048w" sizes="auto, (max-width: 1024px) 100vw, 1024px" /><figcaption class="wp-element-caption">I manage the custom Severino Labs Security Layer plugin directly on the web hosting server over SSH, keeping the site’s hardening logic under my control.</figcaption></figure>
+
+
+
+<p>That approach also keeps the security model narrower and more intentional. Third-party security plugins often bundle large numbers of features, but I do not need a generic all-in-one toolbox deciding how this site behaves. I need a focused control layer built around the actual risks and requirements of my environment. Writing that logic myself keeps the behavior predictable and makes it easier to audit, update, and explain.</p>
+
+
+
+<p>In practice, this plugin becomes the WordPress-side counterpart to Cloudflare. Cloudflare handles the edge, while the custom plugin handles application-layer hardening inside WordPress itself. The sections that follow break down the controls it manages in more detail.</p>
+
+
+
+<h4 class="wp-block-heading">Reducing the Default WordPress Attack Surface</h4>
+
+
+
+<p>WordPress exposes more than I want by default on a public-facing site. Some of that exposure is not necessary for this environment, especially when the goal is to reduce reconnaissance value and remove features that do not need to be available at all. In the custom security plugin, I use a small set of targeted controls to cut back that default surface rather than leaving WordPress in its out-of-the-box state.</p>
+
+
+
+<p>One example is XML-RPC, which I disable entirely because I do not need it for this site. WordPress also supports pingback-related XML-RPC methods, which have historically been abused and provide no practical value here, so those are removed as well.</p>
+
+
+
+<pre class="source-code-block"><code>add_filter('xmlrpc_enabled', '__return_false', 999);
+
+add_filter('xmlrpc_methods', function ($methods) {
+    unset($methods&#91;'pingback.ping']);
+    return $methods;
+});</code></pre>
+
+
+
+<blockquote class="wp-block-quote is-layout-flow wp-block-quote-is-layout-flow">
+<p>Note: The code shown here reflects the plugin’s earlier hardening-focused implementation. The live plugin has since evolved into a broader security layer with configurable settings, file integrity monitoring, security event logging, and dedicated admin screens.</p>
+</blockquote>
+
+
+
+<div class="wp-block-buttons is-layout-flex wp-block-buttons-is-layout-flex">
+<div class="wp-block-button"><a class="wp-block-button__link wp-element-button" href="https://github.com/joeseverino/severino-labs-security-layer" target="_blank" rel="noreferrer noopener">View Plugin on GitHub</a></div>
+</div>
+
+
+
+<figure class="wp-block-image size-large"><img loading="lazy" decoding="async" width="1024" height="662" src="../../wp-content/uploads/sites/2/2026/04/no-xml-xrp-1024x662.png" alt="" class="wp-image-573" srcset="../../wp-content/uploads/sites/2/2026/04/no-xml-xrp-1024x662.png 1024w, ../../wp-content/uploads/sites/2/2026/04/no-xml-xrp-300x194.png 300w, ../../wp-content/uploads/sites/2/2026/04/no-xml-xrp-768x497.png 768w, ../../wp-content/uploads/sites/2/2026/04/no-xml-xrp.png 1279w" sizes="auto, (max-width: 1024px) 100vw, 1024px" /><figcaption class="wp-element-caption">Direct access to xmlrpc.php is blocked as part of reducing the site’s default WordPress exposure.</figcaption></figure>
+
+
+
+<p>I also reduce user enumeration paths that can expose account-related information more easily than necessary. In particular, I remove the default REST API user endpoints and redirect author archive enumeration attempts back to the home page.</p>
+
+
+
+<pre class="source-code-block"><code>add_filter('rest_endpoints', function ($endpoints) {
+    unset($endpoints&#91;'/wp/v2/users']);
+    unset($endpoints&#91;'/wp/v2/users/(?P&lt;id&gt;&#91;\d]+)']);
+    unset($endpoints&#91;'/wp/v2/users/me']);
+    return $endpoints;
+});
+add_action('template_redirect', function () {
+    if (is_author() || (isset($_GET&#91;'author']) &amp;&amp; is_numeric($_GET&#91;'author']))) {
+        wp_redirect(home_url(), 301);
+        exit;
+    }
+});</code></pre>
+
+
+
+<p>Finally, I remove the public WordPress version signal from the page header so the site does not advertise that detail by default. That matters because version enumeration can directly support exploit selection, which I also demonstrated in my <a href="/portfolio/exploiting-php-cgi-argument-injection/" data-type="post" data-id="406" target="_blank" rel="noreferrer noopener">PHP CGI argument injection lab</a>.</p>
+
+
+
+<pre class="source-code-block"><code>remove_action('wp_head', 'wp_generator');</code></pre>
+
+
+
+<h4 class="wp-block-heading">Browser-Enforced Security Policies</h4>
+
+
+
+<p>Not every meaningful security control lives in authentication or server-side request handling. Browsers also enforce policy on the client side, which makes response headers an important part of the site’s security model. In the custom plugin, I send a set of browser-facing headers that limit framing behavior, reduce content-type ambiguity, control referrer leakage, restrict access to sensitive browser features, and define a Content Security Policy for what the page is allowed to load.</p>
+
+
+
+<p>One part of that layer is a set of baseline headers that tighten browser behavior without affecting normal site use. I use X-Frame-Options to limit framing to the same origin, X-Content-Type-Options to disable MIME sniffing, and Referrer-Policy to reduce how much origin information is shared across requests. I also send a Permissions-Policy that disables browser access to the camera, microphone, and geolocation APIs for this site.</p>
+
+
+
+<pre class="source-code-block"><code>header('X-Frame-Options: SAMEORIGIN');
+header('X-Content-Type-Options: nosniff');
+header('Referrer-Policy: strict-origin-when-cross-origin');
+header("Permissions-Policy: camera=(), microphone=(), geolocation=()");</code></pre>
+
+
+
+<p>The most opinionated control in this layer is the Content Security Policy. Rather than letting the browser load active content from anywhere, I define a policy that defaults to the site itself and then explicitly allow only the sources required for the site’s actual functionality. In this case, that includes Cloudflare challenge resources, Google Tag Manager, Cloudflare analytics resources, and tightly scoped directives for scripts, styles, images, fonts, connections, frames, workers, and form handling.</p>
+
+
+
+<pre class="source-code-block"><code>header(
+    "Content-Security-Policy: "
+    . "default-src 'self'; "
+    . "script-src 'self' https://challenges.cloudflare.com https://www.googletagmanager.com https://static.cloudflareinsights.com 'unsafe-inline' blob:; "
+    . "style-src 'self' https: 'unsafe-inline'; "
+    . "img-src 'self' data: https:; "
+    . "font-src 'self' https:; "
+    . "connect-src 'self' https://challenges.cloudflare.com https://www.google-analytics.com https://cloudflareinsights.com; "
+    . "frame-src 'self' https://challenges.cloudflare.com; "
+    . "worker-src 'self' blob:; "
+    . "frame-ancestors 'self'; "
+    . "form-action 'self'; "
+    . "object-src 'none'; "
+    . "base-uri 'self';"
+);</code></pre>
+
+
+
+<p>That policy is intentionally practical rather than theoretical. It is strict enough to reduce unnecessary resource loading and limit common abuse paths, but it still allows the services the site actually uses. The goal is not to publish a decorative CSP that breaks real functionality; the goal is to enforce a policy that reflects the site’s real dependencies and keeps the browser on a shorter leash by default.</p>
+
+
+
+<figure class="wp-block-image size-large"><img loading="lazy" decoding="async" width="1024" height="640" src="../../wp-content/uploads/sites/2/2026/04/curl-1024x640.png" alt="" class="wp-image-577" srcset="../../wp-content/uploads/sites/2/2026/04/curl-1024x640.png 1024w, ../../wp-content/uploads/sites/2/2026/04/curl-300x187.png 300w, ../../wp-content/uploads/sites/2/2026/04/curl-768x480.png 768w, ../../wp-content/uploads/sites/2/2026/04/curl-1536x960.png 1536w, ../../wp-content/uploads/sites/2/2026/04/curl.png 1860w" sizes="auto, (max-width: 1024px) 100vw, 1024px" /><figcaption class="wp-element-caption">A live curl -I response confirms that the site returns browser-enforced security headers including framing, MIME-type, referrer, permissions, CSP, and HSTS policy.</figcaption></figure>
+
+
+
+<h4 class="wp-block-heading">Hardening Administrative Access</h4>
+
+
+
+<p>Hardening a public site is not only about filtering traffic and reducing exposed features. It also means protecting the interfaces that can administer the environment in the first place. For this site, that includes the WordPress admin login, the hosting control panel, and direct server access over SSH.</p>
+
+
+
+<p>At the WordPress layer, administrative access is restricted to a passkey-only login flow rather than a traditional password-based sign-in. That removes the default password-first model from the dashboard entry point and strengthens access to wp-admin beyond a standard WordPress setup.</p>
+
+
+
+<p>The hosting account is also treated as a critical control point because access there reaches far beyond WordPress itself. cPanel can affect files, databases, email, and domain configuration, so I protect it with a strong unique password and two-factor authentication rather than treating it like a secondary admin surface.</p>
+
+
+
+<figure class="wp-block-image size-large"><img loading="lazy" decoding="async" width="1024" height="489" src="../../wp-content/uploads/sites/2/2026/04/cpanel2fa-2-1024x489.png" alt="" class="wp-image-583" srcset="../../wp-content/uploads/sites/2/2026/04/cpanel2fa-2-1024x489.png 1024w, ../../wp-content/uploads/sites/2/2026/04/cpanel2fa-2-300x143.png 300w, ../../wp-content/uploads/sites/2/2026/04/cpanel2fa-2-768x367.png 768w, ../../wp-content/uploads/sites/2/2026/04/cpanel2fa-2-1536x734.png 1536w, ../../wp-content/uploads/sites/2/2026/04/cpanel2fa-2-2048x978.png 2048w" sizes="auto, (max-width: 1024px) 100vw, 1024px" /><figcaption class="wp-element-caption">cPanel remains a high-value administrative control point, so it is protected with a strong unique password and two-factor authentication.</figcaption></figure>
+
+
+
+<p>For direct management access, I also use SSH key-based authentication on the hosting server instead of relying only on browser-based administration. Access is tied to an RSA 4096 key pair, which gives me a more controlled path for maintaining the environment directly when needed.</p>
+
+
+
+<p>Together, these controls harden the main administrative paths into the environment rather than focusing only on public-facing traffic. Edge protections, WordPress hardening, and administrative access controls each solve different parts of the same security problem.</p>
+
+
+
+<h4 class="wp-block-heading">Enforcing Zero Trust Access on Administrative Endpoints</h4>
+
+
+
+<p>Protecting administrative access is not only about how users authenticate, but also whether they can reach the login interface at all. Even with a passkey-only WordPress login, the default administrative path is still publicly reachable unless it is explicitly restricted.</p>
+
+
+
+<figure class="wp-block-image size-large"><img loading="lazy" decoding="async" width="1024" height="750" src="../../wp-content/uploads/sites/2/2026/04/application-1024x750.png" alt="" class="wp-image-614" srcset="../../wp-content/uploads/sites/2/2026/04/application-1024x750.png 1024w, ../../wp-content/uploads/sites/2/2026/04/application-300x220.png 300w, ../../wp-content/uploads/sites/2/2026/04/application-768x562.png 768w, ../../wp-content/uploads/sites/2/2026/04/application-1536x1125.png 1536w, ../../wp-content/uploads/sites/2/2026/04/application-2048x1500.png 2048w" sizes="auto, (max-width: 1024px) 100vw, 1024px" /><figcaption class="wp-element-caption">Cloudflare Access application protecting the WordPress administrative endpoint at /wp-admin.</figcaption></figure>
+
+
+
+<p>To reduce that exposure, I placed the WordPress administrative endpoint behind Cloudflare Access. This moves access control out of the application and into the edge, where requests can be evaluated before they ever reach WordPress.</p>
+
+
+
+<p>I configured an access policy that requires both identity and device posture. In practice, that means access is only allowed if the user belongs to my administrative access list and the device is presenting the expected Cloudflare client posture signal.</p>
+
+
+
+<figure class="wp-block-image size-large"><img loading="lazy" decoding="async" width="1024" height="750" src="../../wp-content/uploads/sites/2/2026/04/policy-1024x750.png" alt="" class="wp-image-615" srcset="../../wp-content/uploads/sites/2/2026/04/policy-1024x750.png 1024w, ../../wp-content/uploads/sites/2/2026/04/policy-300x220.png 300w, ../../wp-content/uploads/sites/2/2026/04/policy-768x562.png 768w, ../../wp-content/uploads/sites/2/2026/04/policy-1536x1125.png 1536w, ../../wp-content/uploads/sites/2/2026/04/policy-2048x1500.png 2048w" sizes="auto, (max-width: 1024px) 100vw, 1024px" /><figcaption class="wp-element-caption">Access policy requiring both administrative identity and a trusted device posture (WARP) before access is granted.</figcaption></figure>
+
+
+
+<p>Enrolled devices are registered with Cloudflare Zero Trust and associated with the administrative posture profile used in access policy evaluation.</p>
+
+
+
+<figure class="wp-block-image size-large"><img loading="lazy" decoding="async" width="1024" height="750" src="../../wp-content/uploads/sites/2/2026/04/devices-1-1024x750.png" alt="" class="wp-image-622" srcset="../../wp-content/uploads/sites/2/2026/04/devices-1-1024x750.png 1024w, ../../wp-content/uploads/sites/2/2026/04/devices-1-300x220.png 300w, ../../wp-content/uploads/sites/2/2026/04/devices-1-768x562.png 768w, ../../wp-content/uploads/sites/2/2026/04/devices-1-1536x1125.png 1536w, ../../wp-content/uploads/sites/2/2026/04/devices-1-2048x1500.png 2048w" sizes="auto, (max-width: 1024px) 100vw, 1024px" /><figcaption class="wp-element-caption">Enrolled devices registered with Cloudflare Zero Trust and associated with the administrative posture profile used for access enforcement.</figcaption></figure>
+
+
+
+<p>This changes the exposure model of wp-admin. Instead of presenting the login interface to any internet client, the request is first evaluated by Cloudflare at the edge. If the request does not satisfy the policy, WordPress is never reached and the login flow is never exposed.</p>
+
+
+
+<p>That layered design matters because it separates two different security decisions. Cloudflare Access determines whether a request is permitted to reach the administrative surface at all, while WordPress passkeys determine how the user authenticates once access to that surface is allowed.</p>
+
+
+
+<p>When device posture is missing or the request does not satisfy policy, Cloudflare blocks the request at the edge with a 403 Forbidden response. That means unauthenticated or untrusted devices are stopped before they can interact with WordPress.</p>
+
+
+
+<figure class="wp-block-image size-large"><img loading="lazy" decoding="async" width="1024" height="750" src="../../wp-content/uploads/sites/2/2026/04/forbidden-1024x750.png" alt="" class="wp-image-617" srcset="../../wp-content/uploads/sites/2/2026/04/forbidden-1024x750.png 1024w, ../../wp-content/uploads/sites/2/2026/04/forbidden-300x220.png 300w, ../../wp-content/uploads/sites/2/2026/04/forbidden-768x562.png 768w, ../../wp-content/uploads/sites/2/2026/04/forbidden-1536x1125.png 1536w, ../../wp-content/uploads/sites/2/2026/04/forbidden-2048x1500.png 2048w" sizes="auto, (max-width: 1024px) 100vw, 1024px" /><figcaption class="wp-element-caption">Requests to wp-admin are blocked at the edge when Zero Trust requirements are not satisfied.</figcaption></figure>
+
+
+
+<p>In a production environment, this same model could be extended with stronger posture controls such as minimum operating system version, disk encryption, or endpoint protection requirements. For this implementation, I used the Cloudflare client as a practical device trust signal that materially reduces exposure without changing the WordPress application itself.</p>
+
+
+
+<h4 class="wp-block-heading">Building a Passkey-Only Login Experience</h4>
+
+
+
+<p>The custom login experience is also part of the Severino Labs Security Layer plugin. Instead of treating authentication as a separate add-on, I keep the login behavior inside the same custom hardening layer that manages the rest of the site’s WordPress-side security controls.</p>
+
+
+
+<p>In this case, the plugin does more than restyle the default WordPress login page. It replaces the normal username-and-password experience with a passkey-only interface and forces administrative authentication through that path. The result is not a mixed login model with passkeys added as a convenience feature; it is a login flow built specifically around passkey authentication.</p>
+
+
+
+<p>Because passkey registration is disabled, this setup does not allow new credentials to be enrolled through the public-facing login experience. In practice, that means the passkey-enabled administrative path is limited to the credential I already provisioned rather than being open for ongoing self-registration.</p>
+
+
+
+<figure class="wp-block-image size-large"><img loading="lazy" decoding="async" width="1024" height="638" src="../../wp-content/uploads/sites/2/2026/04/signin-1024x638.png" alt="" class="wp-image-581" srcset="../../wp-content/uploads/sites/2/2026/04/signin-1024x638.png 1024w, ../../wp-content/uploads/sites/2/2026/04/signin-300x187.png 300w, ../../wp-content/uploads/sites/2/2026/04/signin-768x479.png 768w, ../../wp-content/uploads/sites/2/2026/04/signin-1536x957.png 1536w, ../../wp-content/uploads/sites/2/2026/04/signin-2048x1276.png 2048w" sizes="auto, (max-width: 1024px) 100vw, 1024px" /><figcaption class="wp-element-caption">My custom security plugin replaces the default WordPress login screen with a passkey-only interface, while passkey registration remains disabled.</figcaption></figure>
+
+
+
+<p>That design keeps the login experience aligned with the actual access model. The interface is simplified to a single action, the default password workflow is removed from view, and the administrative entry point reflects the stronger authentication policy enforced behind it. Rather than layering passkeys on top of the stock WordPress login page, the plugin makes passkey-only access the expected and explicit behavior.</p>
+
+
+
+<h4 class="wp-block-heading">Debugging WP-WebAuthn Passkey Creation</h4>
+
+
+
+<p>The hardest part of the passkey setup was not the login interface itself. It was getting WP-WebAuthn to actually save a newly registered passkey. During testing, the plugin reported that registration was successful, but no credential was being stored in the list.</p>
+
+
+
+<p>To verify what was happening, I checked the browser’s network activity during passkey registration. The request returned an HTTP 200 response, which made the issue harder to spot at first because the flow appeared successful on the surface even though nothing was actually being saved.</p>
+
+
+
+<figure class="wp-block-image size-large"><img loading="lazy" decoding="async" width="1024" height="200" src="../../wp-content/uploads/sites/2/2026/04/200-copy-1024x200.png" alt="" class="wp-image-585" srcset="../../wp-content/uploads/sites/2/2026/04/200-copy-1024x200.png 1024w, ../../wp-content/uploads/sites/2/2026/04/200-copy-300x59.png 300w, ../../wp-content/uploads/sites/2/2026/04/200-copy-768x150.png 768w, ../../wp-content/uploads/sites/2/2026/04/200-copy.png 1134w" sizes="auto, (max-width: 1024px) 100vw, 1024px" /><figcaption class="wp-element-caption">The passkey registration request returned HTTP 200 even though no credential was being added to the Passkey list.</figcaption></figure>
+
+
+
+<p>That pushed me into WordPress-side debugging. I enabled debug logging in wp-config.php, which exposed the real failure: the plugin was trying to write to a database table that did not exist.</p>
+
+
+
+<figure class="wp-block-image size-large"><img loading="lazy" decoding="async" width="1024" height="488" src="../../wp-content/uploads/sites/2/2026/04/wp-config-1024x488.png" alt="" class="wp-image-587" srcset="../../wp-content/uploads/sites/2/2026/04/wp-config-1024x488.png 1024w, ../../wp-content/uploads/sites/2/2026/04/wp-config-300x143.png 300w, ../../wp-content/uploads/sites/2/2026/04/wp-config-768x366.png 768w, ../../wp-content/uploads/sites/2/2026/04/wp-config.png 1342w" sizes="auto, (max-width: 1024px) 100vw, 1024px" /><figcaption class="wp-element-caption">Debug logging was enabled in wp-config.php to surface the backend error behind the failed passkey registration flow.</figcaption></figure>
+
+
+
+<figure class="wp-block-image size-large"><img loading="lazy" decoding="async" width="1024" height="593" src="../../wp-content/uploads/sites/2/2026/04/log-1-1024x593.png" alt="" class="wp-image-591" srcset="../../wp-content/uploads/sites/2/2026/04/log-1-1024x593.png 1024w, ../../wp-content/uploads/sites/2/2026/04/log-1-300x174.png 300w, ../../wp-content/uploads/sites/2/2026/04/log-1-768x444.png 768w, ../../wp-content/uploads/sites/2/2026/04/log-1-1536x889.png 1536w, ../../wp-content/uploads/sites/2/2026/04/log-1-2048x1185.png 2048w" sizes="auto, (max-width: 1024px) 100vw, 1024px" /><figcaption class="wp-element-caption">WordPress debug logging exposed the real failure: WP-WebAuthn was attempting to write to the wpos_wwa_credentials table, which did not exist.</figcaption></figure>
+
+
+
+<p>After that, I checked the plugin code to confirm which table WP-WebAuthn expected to use, then created the missing table manually in phpMyAdmin.</p>
+
+
+
+<figure class="wp-block-image size-large"><img loading="lazy" decoding="async" width="1024" height="650" src="../../wp-content/uploads/sites/2/2026/04/wp-webauthn-php-1024x650.png" alt="" class="wp-image-589" srcset="../../wp-content/uploads/sites/2/2026/04/wp-webauthn-php-1024x650.png 1024w, ../../wp-content/uploads/sites/2/2026/04/wp-webauthn-php-300x190.png 300w, ../../wp-content/uploads/sites/2/2026/04/wp-webauthn-php-768x487.png 768w, ../../wp-content/uploads/sites/2/2026/04/wp-webauthn-php-1536x975.png 1536w, ../../wp-content/uploads/sites/2/2026/04/wp-webauthn-php-2048x1300.png 2048w" sizes="auto, (max-width: 1024px) 100vw, 1024px" /><figcaption class="wp-element-caption">Reviewing the plugin code confirmed which table the registration flow expected to use.</figcaption></figure>
+
+
+
+<figure class="wp-block-image size-large"><img loading="lazy" decoding="async" width="1024" height="623" src="../../wp-content/uploads/sites/2/2026/04/phpmyadmin-1024x623.png" alt="" class="wp-image-592" srcset="../../wp-content/uploads/sites/2/2026/04/phpmyadmin-1024x623.png 1024w, ../../wp-content/uploads/sites/2/2026/04/phpmyadmin-300x182.png 300w, ../../wp-content/uploads/sites/2/2026/04/phpmyadmin-768x467.png 768w, ../../wp-content/uploads/sites/2/2026/04/phpmyadmin-1536x934.png 1536w, ../../wp-content/uploads/sites/2/2026/04/phpmyadmin-2048x1246.png 2048w" sizes="auto, (max-width: 1024px) 100vw, 1024px" /><figcaption class="wp-element-caption">I created the missing WP-WebAuthn table manually in phpMyAdmin.</figcaption></figure>
+
+
+
+<p>With the table in place, registration finally worked and the passkey was saved correctly.</p>
+
+
+
+<figure class="wp-block-image size-large"><img loading="lazy" decoding="async" width="1024" height="394" src="../../wp-content/uploads/sites/2/2026/04/success-1024x394.png" alt="" class="wp-image-593" srcset="../../wp-content/uploads/sites/2/2026/04/success-1024x394.png 1024w, ../../wp-content/uploads/sites/2/2026/04/success-300x116.png 300w, ../../wp-content/uploads/sites/2/2026/04/success-768x296.png 768w, ../../wp-content/uploads/sites/2/2026/04/success-1536x591.png 1536w, ../../wp-content/uploads/sites/2/2026/04/success-2048x789.png 2048w" sizes="auto, (max-width: 1024px) 100vw, 1024px" /><figcaption class="wp-element-caption">After the missing table was created, passkey registration succeeded and the credential was saved correctly.</figcaption></figure>
+
+
+
+<h4 class="wp-block-heading">Child Theme and Maintainability</h4>
+
+
+
+<p>I also keep the site’s presentation-layer customizations in a child theme so they stay separate from both the parent theme and the Severino Labs Security Layer plugin. That separation makes updates easier to manage and keeps responsibilities cleaner: the child theme handles site-specific design and template changes, while the custom plugin handles security and authentication logic.</p>
+
+
+
+<figure class="wp-block-image size-large"><img loading="lazy" decoding="async" width="1024" height="740" src="../../wp-content/uploads/sites/2/2026/04/themes-2-1024x740.png" alt="" class="wp-image-639" srcset="../../wp-content/uploads/sites/2/2026/04/themes-2-1024x740.png 1024w, ../../wp-content/uploads/sites/2/2026/04/themes-2-300x217.png 300w, ../../wp-content/uploads/sites/2/2026/04/themes-2-768x555.png 768w, ../../wp-content/uploads/sites/2/2026/04/themes-2-1536x1110.png 1536w, ../../wp-content/uploads/sites/2/2026/04/themes-2-2048x1480.png 2048w" sizes="auto, (max-width: 1024px) 100vw, 1024px" /><figcaption class="wp-element-caption">My site uses a child theme to keep presentation-layer customizations separate from the parent theme.</figcaption></figure>
+
+
+
+<figure class="wp-block-image size-large"><img loading="lazy" decoding="async" width="1024" height="593" src="../../wp-content/uploads/sites/2/2026/04/theme-1024x593.png" alt="" class="wp-image-597" srcset="../../wp-content/uploads/sites/2/2026/04/theme-1024x593.png 1024w, ../../wp-content/uploads/sites/2/2026/04/theme-300x174.png 300w, ../../wp-content/uploads/sites/2/2026/04/theme-768x444.png 768w, ../../wp-content/uploads/sites/2/2026/04/theme-1536x889.png 1536w, ../../wp-content/uploads/sites/2/2026/04/theme-2048x1185.png 2048w" sizes="auto, (max-width: 1024px) 100vw, 1024px" /><figcaption class="wp-element-caption">Theme files are maintained separately from my custom security plugin so design changes and security logic remain isolated.</figcaption></figure>
+
+
+
+<h4 class="wp-block-heading">Validation and Testing</h4>
+
+
+
+<p>After implementing the controls, I validated them against the live site instead of assuming the configuration alone was enough. That included confirming that security headers were being returned, that unnecessary WordPress exposure had been reduced, and that the passkey registration and login flow worked correctly once the WP-WebAuthn persistence issue was fixed.</p>
+
+
+
+<p>I also used external validation to confirm that those controls were visible from outside the environment. That gave me a direct way to check that the hardening work was not just present in code, but active in the site’s real public-facing behavior.</p>
+
+
+
+<figure class="wp-block-image size-large"><img loading="lazy" decoding="async" width="1024" height="675" src="../../wp-content/uploads/sites/2/2026/04/observatory-1024x675.png" alt="" class="wp-image-601" srcset="../../wp-content/uploads/sites/2/2026/04/observatory-1024x675.png 1024w, ../../wp-content/uploads/sites/2/2026/04/observatory-300x198.png 300w, ../../wp-content/uploads/sites/2/2026/04/observatory-768x506.png 768w, ../../wp-content/uploads/sites/2/2026/04/observatory-1536x1013.png 1536w, ../../wp-content/uploads/sites/2/2026/04/observatory-2048x1350.png 2048w" sizes="auto, (max-width: 1024px) 100vw, 1024px" /><figcaption class="wp-element-caption">Observatory results provided an external check that the site’s browser-facing security controls were active in the live environment.</figcaption></figure>
+
+
+
+<figure class="wp-block-image size-large"><img loading="lazy" decoding="async" width="1024" height="642" src="../../wp-content/uploads/sites/2/2026/04/cf_log-1024x642.png" alt="" class="wp-image-634" srcset="../../wp-content/uploads/sites/2/2026/04/cf_log-1024x642.png 1024w, ../../wp-content/uploads/sites/2/2026/04/cf_log-300x188.png 300w, ../../wp-content/uploads/sites/2/2026/04/cf_log-768x482.png 768w, ../../wp-content/uploads/sites/2/2026/04/cf_log-1536x963.png 1536w, ../../wp-content/uploads/sites/2/2026/04/cf_log-2048x1285.png 2048w" sizes="auto, (max-width: 1024px) 100vw, 1024px" /><figcaption class="wp-element-caption">Cloudflare Security Events showed blocked requests from multiple countries shortly after the custom rules were enabled, confirming that XML-RPC and sensitive file probes were being stopped at the edge.</figcaption></figure>
+
+
+
+<p>I also checked Cloudflare Security Events after enabling the custom rules. The logs showed blocked requests from multiple countries within a short period, which is consistent with broad automated scanning rather than normal visitor behavior. This confirmed that the rules were actively filtering XML-RPC and sensitive file probing before those requests reached the WordPress origin.</p>
+
+
+
+<h4 class="wp-block-heading">Tradeoffs and Practical Constraints</h4>
+
+
+
+<p>This setup is intentionally practical rather than scanner-perfect. Mozilla Observatory gives the site a B (75/100), with the main deductions coming from the current Content Security Policy, missing Subresource Integrity, and the lack of Cross-Origin-Resource-Policy.</p>
+
+
+
+<p>Those findings are useful, but I do not treat every recommendation as something to force immediately. The current policy still has to support the site’s real dependencies, and some stricter settings would require further front-end cleanup before they could be applied safely. I also leave HSTS preload disabled intentionally rather than enabling it just to improve a report.</p>
+
+
+
+<p>For this site, the goal is a security configuration that is stronger, controlled, and maintainable in the live environment, not one that looks perfect in a scan while introducing unnecessary breakage.</p>
+
+
+
+<h4 class="wp-block-heading">Conclusion</h4>
+
+
+
+<p>Securing this WordPress site ended up being more than a matter of turning on HTTPS or installing a few plugins. The final setup combines Cloudflare at the edge, a custom WordPress security plugin inside the application, reduced default WordPress exposure, browser-enforced security headers, hardened administrative access, and a passkey-only login experience.</p>
+
+
+
+<p>Just as important, the project stayed practical. Instead of stacking generic tools and hoping they worked well together, I built a smaller and more controlled hardening layer around the site’s actual requirements. That included debugging WP-WebAuthn when passkey registration failed, separating security logic from presentation concerns, and validating that the controls were active in the live environment.</p>
+
+
+
+<p>The result is a WordPress deployment that is materially stronger than the default setup while still remaining understandable, maintainable, and tailored to how the site is actually run.</p>
+
+
+
+<h4 class="wp-block-heading">Future Goals</h4>
+
+
+
+<p>A future project I want to explore is sso.jseverino.net as a centralized authentication layer for my personal sites. The goal would be to unify access across environments like jseverino.com and jseverino.net instead of managing them as separate login boundaries.</p>
+
+
+
+<p>Beyond that, I want to keep tightening the site’s browser security policy over time as dependencies are reduced and stricter controls become easier to support cleanly.</p>
+
+
+
+<h4 class="wp-block-heading">Lessons Learned</h4>
+
+
+
+<ul class="wp-block-list">
+<li>Some controls are more effective at the edge than inside the application. Moving HSTS enforcement from WordPress to Cloudflare resolved an Observatory finding and aligned transport policy with the edge layer.</li>
+
+
+
+<li>Verifying live changes sometimes required more than a browser cache clear. Purging Cloudflare cache and enabling Development Mode made updates visible consistently.</li>
+
+
+
+<li>Applying the final Zero Trust policy before device onboarding blocked my phone from the protected admin path. A temporary identity-only rule was needed to complete enrollment before restoring the stricter policy.</li>
+</ul>
+</div>
+
+
+<div class="wp-block-group has-global-padding is-layout-constrained wp-container-core-group-is-layout-3b6f4345 wp-block-group-is-layout-constrained">
+<h4 class="wp-block-heading">Technologies Used</h4>
+
+
+
+<div class="wp-block-group tech-pills is-vertical is-layout-flex wp-container-core-group-is-layout-268ff4a9 wp-block-group-is-layout-flex" style="padding-top:0;padding-bottom:0"><div style="padding-top:0;padding-bottom:0" class="taxonomy-post_tag wp-block-post-terms has-small-font-size"><a href="../../tag/cloudflare/index.html" rel="tag">Cloudflare</a><span class="wp-block-post-terms__separator"> </span><a href="../../tag/php/index.html" rel="tag">PHP</a><span class="wp-block-post-terms__separator"> </span><a href="../../tag/phpmyadmin/index.html" rel="tag">phpMyAdmin</a><span class="wp-block-post-terms__separator"> </span><a href="../../tag/ssh/index.html" rel="tag">SSH</a><span class="wp-block-post-terms__separator"> </span><a href="../../tag/webauthn/index.html" rel="tag">WebAuthn</a><span class="wp-block-post-terms__separator"> </span><a href="../../tag/wordpress/index.html" rel="tag">WordPress</a><span class="wp-block-post-terms__separator"> </span><a href="../../tag/zero-trust/index.html" rel="tag">Zero Trust</a></div></div>
+
+
+
+<hr class="wp-block-separator has-css-opacity is-style-wide"/>
+</div>
+</main>
+
+
+<footer class="wp-block-template-part">
+<div class="wp-block-group alignfull has-global-padding is-layout-constrained wp-block-group-is-layout-constrained" style="padding-top:var(--wp--preset--spacing--30);padding-bottom:var(--wp--preset--spacing--30)">
+<div class="wp-block-group alignwide is-content-justification-space-between is-nowrap is-layout-flex wp-container-core-group-is-layout-cb46ffcb wp-block-group-is-layout-flex">
+<div class="wp-block-group is-nowrap is-layout-flex wp-container-core-group-is-layout-3b4e9d3e wp-block-group-is-layout-flex"></div>
+
+
+
+<div class="wp-block-group is-nowrap is-layout-flex wp-container-core-group-is-layout-6c531013 wp-block-group-is-layout-flex">
+<ul class="wp-block-social-links has-small-icon-size has-icon-color is-style-logos-only is-content-justification-right is-nowrap is-layout-flex wp-container-core-social-links-is-layout-72308760 wp-block-social-links-is-layout-flex"><li style="color:#0B0620;" class="wp-social-link wp-social-link-linkedin has-foreground-color wp-block-social-link"><a href="https://linkedin.com/in/joeseverino/" class="wp-block-social-link-anchor"><svg width="24" height="24" viewBox="0 0 24 24" version="1.1" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false"><path d="M19.7,3H4.3C3.582,3,3,3.582,3,4.3v15.4C3,20.418,3.582,21,4.3,21h15.4c0.718,0,1.3-0.582,1.3-1.3V4.3 C21,3.582,20.418,3,19.7,3z M8.339,18.338H5.667v-8.59h2.672V18.338z M7.004,8.574c-0.857,0-1.549-0.694-1.549-1.548 c0-0.855,0.691-1.548,1.549-1.548c0.854,0,1.547,0.694,1.547,1.548C8.551,7.881,7.858,8.574,7.004,8.574z M18.339,18.338h-2.669 v-4.177c0-0.996-0.017-2.278-1.387-2.278c-1.389,0-1.601,1.086-1.601,2.206v4.249h-2.667v-8.59h2.559v1.174h0.037 c0.356-0.675,1.227-1.387,2.526-1.387c2.703,0,3.203,1.779,3.203,4.092V18.338z"></path></svg><span class="wp-block-social-link-label screen-reader-text">LinkedIn</span></a></li>
+
+<li style="color:#0B0620;" class="wp-social-link wp-social-link-github has-foreground-color wp-block-social-link"><a href="https://github.com/joeseverino" class="wp-block-social-link-anchor"><svg width="24" height="24" viewBox="0 0 24 24" version="1.1" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false"><path d="M12,2C6.477,2,2,6.477,2,12c0,4.419,2.865,8.166,6.839,9.489c0.5,0.09,0.682-0.218,0.682-0.484 c0-0.236-0.009-0.866-0.014-1.699c-2.782,0.602-3.369-1.34-3.369-1.34c-0.455-1.157-1.11-1.465-1.11-1.465 c-0.909-0.62,0.069-0.608,0.069-0.608c1.004,0.071,1.532,1.03,1.532,1.03c0.891,1.529,2.341,1.089,2.91,0.833 c0.091-0.647,0.349-1.086,0.635-1.337c-2.22-0.251-4.555-1.111-4.555-4.943c0-1.091,0.39-1.984,1.03-2.682 C6.546,8.54,6.202,7.524,6.746,6.148c0,0,0.84-0.269,2.75,1.025C10.295,6.95,11.15,6.84,12,6.836 c0.85,0.004,1.705,0.114,2.504,0.336c1.909-1.294,2.748-1.025,2.748-1.025c0.546,1.376,0.202,2.394,0.1,2.646 c0.64,0.699,1.026,1.591,1.026,2.682c0,3.841-2.337,4.687-4.565,4.935c0.359,0.307,0.679,0.917,0.679,1.852 c0,1.335-0.012,2.415-0.012,2.741c0,0.269,0.18,0.579,0.688,0.481C19.138,20.161,22,16.416,22,12C22,6.477,17.523,2,12,2z"></path></svg><span class="wp-block-social-link-label screen-reader-text">GitHub</span></a></li></ul>
+</div>
+</div>
+</div>
+</footer></div>
+<script type="speculationrules">
+{"prefetch":[{"source":"document","where":{"and":[{"href_matches":"/*"},{"not":{"href_matches":["/wp-*.php","/wp-admin/*","/wp-content/uploads/sites/2/*","/wp-content/*","/wp-content/plugins/*","/wp-content/themes/severino-labs-extendable/*","/*\\?(.+)"]}},{"not":{"selector_matches":"a[rel~=\"nofollow\"]"}},{"not":{"selector_matches":".no-prefetch, .no-prefetch a"}}]},"eagerness":"conservative"}]}
+</script>
+	<script>
+	(function () {
+		var current = window.location.pathname;
+		document.querySelectorAll('.wp-block-navigation a').forEach(function (a) {
+			try {
+				if (new URL(a.href).pathname === current) {
+					a.closest('.wp-block-navigation-item')
+					 .classList.add('current-menu-item');
+				}
+			} catch (e) {}
+		});
+	})();
+	</script>
+	<script type="module" src="../../wp-includes/js/dist/script-modules/block-library/navigation/view.min.js" id="@wordpress/block-library/navigation/view-js-module" fetchpriority="low" data-wp-router-options="{&quot;loadOnClientNavigation&quot;:true}"></script>
+<script id="wp-block-template-skip-link-js-after">
+	( function() {
+		var skipLinkTarget = document.querySelector( 'main' ),
+			sibling,
+			skipLinkTargetID,
+			skipLink;
+
+		// Early exit if a skip-link target can't be located.
+		if ( ! skipLinkTarget ) {
+			return;
+		}
+
+		/*
+		 * Get the site wrapper.
+		 * The skip-link will be injected in the beginning of it.
+		 */
+		sibling = document.querySelector( '.wp-site-blocks' );
+
+		// Early exit if the root element was not found.
+		if ( ! sibling ) {
+			return;
+		}
+
+		// Get the skip-link target's ID, and generate one if it doesn't exist.
+		skipLinkTargetID = skipLinkTarget.id;
+		if ( ! skipLinkTargetID ) {
+			skipLinkTargetID = 'wp--skip-link--target';
+			skipLinkTarget.id = skipLinkTargetID;
+		}
+
+		// Create the skip link.
+		skipLink = document.createElement( 'a' );
+		skipLink.classList.add( 'skip-link', 'screen-reader-text' );
+		skipLink.id = 'wp-skip-link';
+		skipLink.href = '#' + skipLinkTargetID;
+		skipLink.innerText = 'Skip to content';
+
+		// Inject the skip link.
+		sibling.parentElement.insertBefore( skipLink, sibling );
+	}() );
+	
+//# sourceURL=wp-block-template-skip-link-js-after
+</script>
+<script src="../../wp-content/plugins/severino-labs-admin-modules/assets/js/frontend-enhancements.js" id="sl-frontend-enhancements-js"></script>
+<script src="../../wp-content/themes/severino-labs-extendable/assets/js/mobile-nav.js" id="severino-labs-mobile-nav-js"></script>
+<script id="wp-emoji-settings" type="application/json">
+{"baseUrl":"https://s.w.org/images/core/emoji/17.0.2/72x72/","ext":".png","svgUrl":"https://s.w.org/images/core/emoji/17.0.2/svg/","svgExt":".svg","source":{"concatemoji":"https://jseverino.com/wp-includes/js/wp-emoji-release.min.js?ver=6.9.4"}}
+</script>
+<script type="module">
+/*! This file is auto-generated */
+const a=JSON.parse(document.getElementById("wp-emoji-settings").textContent),o=(window._wpemojiSettings=a,"wpEmojiSettingsSupports"),s=["flag","emoji"];function i(e){try{var t={supportTests:e,timestamp:(new Date).valueOf()};sessionStorage.setItem(o,JSON.stringify(t))}catch(e){}}function c(e,t,n){e.clearRect(0,0,e.canvas.width,e.canvas.height),e.fillText(t,0,0);t=new Uint32Array(e.getImageData(0,0,e.canvas.width,e.canvas.height).data);e.clearRect(0,0,e.canvas.width,e.canvas.height),e.fillText(n,0,0);const a=new Uint32Array(e.getImageData(0,0,e.canvas.width,e.canvas.height).data);return t.every((e,t)=>e===a[t])}function p(e,t){e.clearRect(0,0,e.canvas.width,e.canvas.height),e.fillText(t,0,0);var n=e.getImageData(16,16,1,1);for(let e=0;e<n.data.length;e++)if(0!==n.data[e])return!1;return!0}function u(e,t,n,a){switch(t){case"flag":return n(e,"\ud83c\udff3\ufe0f\u200d\u26a7\ufe0f","\ud83c\udff3\ufe0f\u200b\u26a7\ufe0f")?!1:!n(e,"\ud83c\udde8\ud83c\uddf6","\ud83c\udde8\u200b\ud83c\uddf6")&&!n(e,"\ud83c\udff4\udb40\udc67\udb40\udc62\udb40\udc65\udb40\udc6e\udb40\udc67\udb40\udc7f","\ud83c\udff4\u200b\udb40\udc67\u200b\udb40\udc62\u200b\udb40\udc65\u200b\udb40\udc6e\u200b\udb40\udc67\u200b\udb40\udc7f");case"emoji":return!a(e,"\ud83e\u1fac8")}return!1}function f(e,t,n,a){let r;const o=(r="undefined"!=typeof WorkerGlobalScope&&self instanceof WorkerGlobalScope?new OffscreenCanvas(300,150):document.createElement("canvas")).getContext("2d",{willReadFrequently:!0}),s=(o.textBaseline="top",o.font="600 32px Arial",{});return e.forEach(e=>{s[e]=t(o,e,n,a)}),s}function r(e){var t=document.createElement("script");t.src=e,t.defer=!0,document.head.appendChild(t)}a.supports={everything:!0,everythingExceptFlag:!0},new Promise(t=>{let n=function(){try{var e=JSON.parse(sessionStorage.getItem(o));if("object"==typeof e&&"number"==typeof e.timestamp&&(new Date).valueOf()<e.timestamp+604800&&"object"==typeof e.supportTests)return e.supportTests}catch(e){}return null}();if(!n){if("undefined"!=typeof Worker&&"undefined"!=typeof OffscreenCanvas&&"undefined"!=typeof URL&&URL.createObjectURL&&"undefined"!=typeof Blob)try{var e="postMessage("+f.toString()+"("+[JSON.stringify(s),u.toString(),c.toString(),p.toString()].join(",")+"));",a=new Blob([e],{type:"text/javascript"});const r=new Worker(URL.createObjectURL(a),{name:"wpTestEmojiSupports"});return void(r.onmessage=e=>{i(n=e.data),r.terminate(),t(n)})}catch(e){}i(n=f(s,u,c,p))}t(n)}).then(e=>{for(const n in e)a.supports[n]=e[n],a.supports.everything=a.supports.everything&&a.supports[n],"flag"!==n&&(a.supports.everythingExceptFlag=a.supports.everythingExceptFlag&&a.supports[n]);var t;a.supports.everythingExceptFlag=a.supports.everythingExceptFlag&&!a.supports.flag,a.supports.everything||((t=a.source||{}).concatemoji?r(t.concatemoji):t.wpemoji&&t.twemoji&&(r(t.twemoji),r(t.wpemoji)))});
+//# sourceURL=https://jseverino.com/wp-includes/js/wp-emoji-loader.min.js
+</script>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'9fcb7a0e19b72d03',t:'MTc3ODk0NTk4Mw=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+</html>

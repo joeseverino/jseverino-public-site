@@ -1,0 +1,8 @@
+.DS_Store
+.claude/
+
+# Original "Save Page As" dump used to bootstrap this project — the
+# wget-mirrored public/ supersedes it. Kept on disk for reference but
+# not tracked.
+home.html
+home_files/

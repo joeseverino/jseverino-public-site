@@ -1,0 +1,29 @@
+# Cloudflare Pages headers — see https://developers.cloudflare.com/pages/configuration/headers/
+# Order matters: more specific rules should come BEFORE the catch-all "/*"
+# so their settings take precedence on overlap.
+
+# Long-lived caching for WordPress-served static assets. Filenames are
+# content-stable (uploads include date/size; theme/plugin URLs no longer
+# carry ?ver= cache-busters after postprocess), so a year is safe.
+/wp-content/uploads/*
+  Cache-Control: public, max-age=31536000, immutable
+
+/wp-content/themes/*
+  Cache-Control: public, max-age=604800
+
+/wp-content/plugins/*
+  Cache-Control: public, max-age=604800
+
+/wp-includes/*
+  Cache-Control: public, max-age=604800
+
+# HTML pages: short cache + revalidation so a re-mirror is visible quickly.
+/*.html
+  Cache-Control: public, max-age=300, must-revalidate
+
+# Site-wide security headers.
+/*
+  X-Content-Type-Options: nosniff
+  X-Frame-Options: SAMEORIGIN
+  Referrer-Policy: strict-origin-when-cross-origin
+  Permissions-Policy: geolocation=(), microphone=(), camera=()

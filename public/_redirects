@@ -1,0 +1,10 @@
+# Cloudflare Pages redirects — see https://developers.cloudflare.com/pages/configuration/redirects/
+# Format:  <source>  <destination>  [<status>]
+
+# WordPress endpoints that don't exist in the static mirror.
+/wp-admin/*          /                                   302
+/wp-login.php        /                                   302
+/wp-json/*           /                                   404
+/xmlrpc.php          /                                   404
+/feed/               /                                   404
+/comments/feed/      /                                   404
