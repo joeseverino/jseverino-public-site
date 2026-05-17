@@ -72,11 +72,49 @@
         if (bd) bd.parentNode.removeChild(bd);
     }
 
+    function setMenuState(container, isOpen) {
+        if (!container) return;
+
+        container.classList.toggle('has-modal-open', isOpen);
+        container.classList.toggle('is-menu-open', isOpen);
+        document.documentElement.classList.toggle('has-modal-open', isOpen);
+
+        var dialog = container.querySelector('.wp-block-navigation__responsive-dialog');
+        if (dialog) {
+            if (isOpen) {
+                dialog.setAttribute('aria-modal', 'true');
+                dialog.setAttribute('aria-label', 'Menu');
+                dialog.setAttribute('role', 'dialog');
+            } else {
+                dialog.removeAttribute('aria-modal');
+                dialog.removeAttribute('aria-label');
+                dialog.removeAttribute('role');
+            }
+        }
+
+        if (isOpen) {
+            container.focus({ preventScroll: true });
+        }
+    }
+
+    function openMenu(container) {
+        setMenuState(container, true);
+    }
+
     function closeMenu(container) {
         var btn = container.querySelector(
             '.wp-block-navigation__responsive-container-close'
         );
         if (btn) btn.click();
+
+        /* Static export fallback: WordPress's interactivity module can fail to
+           load on Pages preview/custom-domain mismatches, leaving the data-wp
+           click handlers inert. If WP did not close it, mirror the same state. */
+        setTimeout(function () {
+            if (container.classList.contains('is-menu-open')) {
+                setMenuState(container, false);
+            }
+        }, 0);
     }
 
     /* ── Stagger items in when menu opens ── */
@@ -171,6 +209,14 @@
                 /* Ghost click guard: kill reopening after a just-closed menu */
                 e.stopPropagation();
                 e.stopImmediatePropagation();
+            } else {
+                /* Let WordPress handle the click first. If its module is absent
+                   or blocked, open the menu with the static fallback. */
+                setTimeout(function () {
+                    if (!container.classList.contains('is-menu-open')) {
+                        openMenu(container);
+                    }
+                }, 0);
             }
         }, true /* capture */);
 

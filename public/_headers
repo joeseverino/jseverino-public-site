@@ -8,6 +8,9 @@
 /wp-content/uploads/*
   Cache-Control: public, max-age=31536000, immutable
 
+/wp-content/themes/severino-labs-extendable/assets/js/mobile-nav.js
+  Cache-Control: public, max-age=300, must-revalidate
+
 /wp-content/themes/*
   Cache-Control: public, max-age=604800
 
