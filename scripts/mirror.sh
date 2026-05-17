@@ -26,6 +26,9 @@ command -v wp-static >/dev/null \
 # 1. Regenerate the mirror.
 wp-static jseverino "$@"
 
+# 1b. Reapply fixes that are specific to the Cloudflare Pages static mirror.
+./scripts/apply-static-fixes.sh
+
 # 2. Inspect what changed.
 echo ""
 echo "==> Working tree status after mirror:"

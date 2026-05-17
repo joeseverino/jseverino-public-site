@@ -24,7 +24,8 @@ named-site config is in `$TOOLS_HOME/config/wp-static.sh` (gitignored).
 
 This wipes `public/` (backing up `_headers` / `_redirects` first),
 re-mirrors `https://jseverino.com/`, cleans up WordPress URL artifacts,
-and restores the Cloudflare config.
+restores the Cloudflare config, and reapplies mirror-only fixes from
+`scripts/apply-static-fixes.sh`.
 
 Preview locally:
 
