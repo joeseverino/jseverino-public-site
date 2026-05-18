@@ -1,16 +1,47 @@
 # jseverino-public-site
 
-A static mirror of [jseverino.com](https://jseverino.com) for Cloudflare
-Pages, used to speed-test serving the public site as static files
-instead of through WordPress.
+**Status:** public experiment / migration evaluation  
+**Live test URL:** https://static.jseverino.com  
+**Production site:** https://jseverino.com  
+**Purpose:** compare a static Cloudflare Pages mirror against the current
+WordPress-backed site before deciding whether to migrate off WordPress.
+
+This is **not** the canonical source for my website content and it is
+**not** the final rebuild. It is a static mirror of the live WordPress
+site, published to Cloudflare Pages, so I can test performance,
+operational complexity, broken features, SEO behavior, and deployment
+workflow before committing to a full migration.
+
+The practical questions this repo answers:
+
+- How much faster and simpler is the site when Cloudflare Pages serves
+  static HTML directly?
+- Which WordPress-era features break or need replacements?
+- Can the current public URL structure, design, SEO surface, and content
+  survive a static or Astro-based rebuild?
+- What operational burden disappears if WordPress stops being the public
+  serving layer?
+
+If the experiment succeeds, the likely next step is a real rebuild where
+content comes from my vault and the site is generated directly with Astro.
+This mirror is the proving ground, not the destination architecture.
 
 ## What's here
 
-- `public/` — the static site, deployed as-is to Cloudflare Pages.
+- `public/` — the static mirror deployed as-is to Cloudflare Pages.
   Regenerated from the live WordPress source by `scripts/mirror.sh`.
 - `public/_headers` and `public/_redirects` — Cloudflare Pages config.
   Preserved across mirror re-runs.
-- `scripts/mirror.sh` — thin wrapper around the `wp-static` tool.
+- `scripts/mirror.sh` — wrapper around the `wp-static` tool that can
+  regenerate, commit, and push the mirror.
+
+## Current roles
+
+- `jseverino.com` — current WordPress-backed public site.
+- `static.jseverino.com` — Cloudflare Pages test mirror from this repo.
+
+Do not treat this repo as the source of truth for content yet. Content
+still originates in WordPress, then gets mirrored here for comparison.
 
 ## Regenerating the mirror
 
@@ -35,7 +66,17 @@ python3 -m http.server -d public 8000
 
 ## Deploying to Cloudflare Pages
 
-Connect this repo to a Cloudflare Pages project:
+This repo is connected to the Cloudflare Pages project behind
+`static.jseverino.com`. Deployment is intentionally simple:
+
+```sh
+git push origin main
+```
+
+Cloudflare Pages builds from the `public/` directory and publishes the
+result to `static.jseverino.com`.
+
+For a new Pages project, use:
 
 1. Push to GitHub.
 2. Cloudflare dashboard → **Workers & Pages → Create → Pages → Connect to Git**.
@@ -44,11 +85,11 @@ Connect this repo to a Cloudflare Pages project:
    - **Framework preset:** None
    - **Build command:** (leave blank)
    - **Build output directory:** `public`
-5. Deploy. The first build assigns a `*.pages.dev` URL — use that for
-   the speed comparison without touching DNS.
+5. Deploy. The first build assigns a `*.pages.dev` URL.
 
-To swap DNS later, point `jseverino.com` at the Pages project (Pages →
-Custom domains → Set up a custom domain).
+Do not point `jseverino.com` at this project until the migration work is
+explicitly ready. For now, the comparison target is
+`static.jseverino.com`.
 
 ## Speed-test methodology
 
